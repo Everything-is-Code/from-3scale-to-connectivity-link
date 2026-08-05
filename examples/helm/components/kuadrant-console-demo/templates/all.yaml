@@ -442,18 +442,15 @@ spec:
                 handle:respond(
                   {
                     [":status"] = "204",
-                    ["access-control-allow-origin"] = origin,
+                    ["access-control-allow-origin"] = "*",
                     ["access-control-allow-methods"] = ALLOWED_METHODS,
                     ["access-control-allow-headers"] = ALLOWED_HEADERS,
                     ["access-control-max-age"] = "86400",
-                    ["access-control-allow-credentials"] = "true",
                   },
                   ""
                 )
                 return
               end
-
-              handle:streamInfo():dynamicMetadata():set("cors_lua", "origin", origin)
 
               local auth = handle:headers():get("authorization")
               if auth and auth:sub(1, 7):lower() == "bearer " then
@@ -465,11 +462,6 @@ spec:
             end
 
             function envoy_on_response(handle)
-              local meta = handle:streamInfo():dynamicMetadata():get("cors_lua")
-              local origin = (meta and meta["origin"]) or "*"
-              handle:headers():add("access-control-allow-origin", origin)
-              if origin ~= "*" then
-                handle:headers():add("access-control-allow-credentials", "true")
-              end
+              handle:headers():add("access-control-allow-origin", "*")
               handle:headers():add("access-control-expose-headers", EXPOSE_HEADERS)
             end

@@ -58,7 +58,7 @@ This repository provisions a complete migration workshop environment on OpenShif
 | **OLS (Lightspeed)** | AI assistant with MCP Gateway integration |
 | **LiteMaaS** | LLM proxy for model access |
 | **APIShift** | Migration GUI with the same core path as Migration Toolkit, plus **AI model assist** and Developer Hub registration (`helmApps.apishift`). Chart: [Everything-is-Code/apishift](https://github.com/Everything-is-Code/apishift) |
-| **Migration Toolkit RHCL** | Guided Mushino GUI for 3scale → Connectivity Link (`helmApps.migration-toolkit-rhcl`). Chart: [maximilianoPizarro/migration-toolkit-rhcl](https://github.com/maximilianoPizarro/migration-toolkit-rhcl); upstream: [nmushino/migration-toolkit-rhcl](https://github.com/nmushino/migration-toolkit-rhcl) |
+| **Migration Toolkit RHCL** | Guided Mushino GUI for 3scale → Connectivity Link (`helmApps.migration-toolkit-rhcl`). Docs: [Everything-is-Code/migration-toolkit-rhcl](https://github.com/Everything-is-Code/migration-toolkit-rhcl) |
 | **Kuadrant Console** | OpenShift Console plugin for Connectivity Link (`helmApps.custom-rhcl-console`). Docs: [custom-rhcl-console](https://maximilianopizarro.github.io/custom-rhcl-console/) |
 
 ### Migration Tooling Deep Dive
@@ -93,6 +93,7 @@ Quarkus backend + PatternFly frontend that walks operators through connecting to
 | **Images** | `quay.io/maximilianopizarro/migration-toolkit-rhcl-{backend,frontend}:v0.1.0` |
 | **Defaults** | `THREESCALE_DEFAULT_URL` / `THREESCALE_DEFAULT_TOKEN` (via Helm `backend.threescale.*`) pre-fill the Connection form (`GET /api/defaults`) |
 | **Storage** | In-cluster PostgreSQL |
+| **Docs** | [Everything-is-Code/migration-toolkit-rhcl](https://github.com/Everything-is-Code/migration-toolkit-rhcl) |
 
 #### APIShift (`apishift`)
 

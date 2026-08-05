@@ -473,10 +473,10 @@ connectivityLink:
           scaffolderUrl: "https://backstage-developer-hub-developer-hub.{{ .Values.deployer.domain }}/api/scaffolder/v2/tasks"
           scaffolderToken: "placeholder-set-in-argocd"
           componentSuffix: "-product"
-    # Mushino migration GUI — chart on maximilianoPizarro fork (evolutivo → nmushino/migration-toolkit-rhcl).
+    # Migration Toolkit RHCL — docs: https://github.com/Everything-is-Code/migration-toolkit-rhcl
     - id: migration-toolkit-rhcl
       enabled: true
-      repoURL: "https://github.com/maximilianoPizarro/migration-toolkit-rhcl"
+      repoURL: "https://github.com/Everything-is-Code/migration-toolkit-rhcl"
       path: helm/migration-toolkit-rhcl
       targetRevision: "main"
       destinationNamespace: migration-toolkit

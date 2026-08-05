@@ -70,7 +70,7 @@ IMPORTANT: Never commit real access tokens to Git. Inject them via ArgoCD `value
 | Stores projects and connection settings
 |===
 
-Chart: https://github.com/maximilianoPizarro/migration-toolkit-rhcl
+Docs / chart: https://github.com/Everything-is-Code/migration-toolkit-rhcl
 
 == Next
 

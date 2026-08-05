@@ -491,8 +491,10 @@ spec:
       termination: edge
   observability:
     metrics:
-      createServiceMonitors: true
-      createPrometheusRules: true
+      serviceMonitors:
+        enabled: true
+      prometheusRules:
+        enabled: true
   ingestion:
     otlp:
       grpc:

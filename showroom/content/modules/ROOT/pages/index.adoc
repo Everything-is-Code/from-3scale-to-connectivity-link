@@ -16,6 +16,7 @@ The cluster has two sets of pre-deployed applications — one secured by 3scale 
 * Inspect the equivalent Connectivity Link applications
 * Compare authentication, rate limiting, GitOps, and developer experience side by side
 * *Run the migration* using a generic Developer Hub Software Template
+* Operate day-2 APIs with *Kuadrant Console*, explore *Migration Toolkit*, and *APIShift* (same migration path as the toolkit, plus AI models)
 * *(Optional)* provision a RHEL VM behind Connectivity Link using API key auth via another Software Template
 * Verify the migrated application and test both environments
 

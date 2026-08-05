@@ -36,45 +36,9 @@ This repository provisions a complete migration workshop environment on OpenShif
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                        OpenShift Cluster                                │
-│                                                                         │
-│  ┌─────────────┐  ┌──────────────┐  ┌──────────┐  ┌─────────────────┐  │
-│  │  Developer   │  │   ArgoCD     │  │  Tekton  │  │   DevSpaces     │  │
-│  │    Hub       │  │  (GitOps)    │  │ Pipelines│  │  (Workspaces)   │  │
-│  └──────┬──────┘  └──────┬───────┘  └────┬─────┘  └────────┬────────┘  │
-│         │                │               │                  │           │
-│         ▼                ▼               ▼                  ▼           │
-│  ┌─────────────┐  ┌──────────────┐  ┌──────────┐  ┌─────────────────┐  │
-│  │   Gitea     │  │  Keycloak    │  │  Istio   │  │   Kuadrant      │  │
-│  │  (SCM)      │  │  (Auth)      │  │ Gateway  │  │ (API Mgmt)      │  │
-│  └─────────────┘  └──────────────┘  └──────────┘  └─────────────────┘  │
-│                                                                         │
-│  ┌──────────────────────── 3scale (Source) ────────────────────────┐    │
-│  │  neuralbank-3scale          nfl-wallet-3scale                   │    │
-│  │  (OIDC via 3scale Product)  (API Key via 3scale Product)        │    │
-│  │  APIcast → Backend          APIcast → Backend                   │    │
-│  └─────────────────────────────────────────────────────────────────┘    │
-│                                                                         │
-│  ┌──────────────── Connectivity Link (Target) ────────────────────┐    │
-│  │  neuralbank-stack              nfl-wallet-prod                  │    │
-│  │  (OIDC via OIDCPolicy)        (API Key via AuthPolicy)         │    │
-│  │  Istio Gateway → Backend      Istio Gateway → Backend          │    │
-│  │  + RateLimitPolicy            + RateLimitPolicy + PlanPolicy   │    │
-│  └─────────────────────────────────────────────────────────────────┘    │
-│                                                                         │
-│  ┌────────────────────────────────────────────────────────────────────┐  │
-│  │                    Per-User Namespaces (×200)                       │  │
-│  │     Gateway + HTTPRoute + AuthPolicy + RateLimitPolicy            │  │
-│  └────────────────────────────────────────────────────────────────────┘  │
-│                                                                         │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐                  │
-│  │  Showroom    │  │     OLS      │  │   LiteMaaS   │                  │
-│  │ (Lab Guide)  │  │ (Lightspeed) │  │  (LLM Proxy) │                  │
-│  └──────────────┘  └──────────────┘  └──────────────┘                  │
-└─────────────────────────────────────────────────────────────────────────┘
-```
+![Cluster Topology — operators, namespaces, and relationships](docs/images/cluster-topology.png)
+
+![Migration Flow — 3scale to Connectivity Link via APIShift and Migration Toolkit (same path; APIShift adds AI)](docs/images/migration-flow.png)
 
 ### Components
 
@@ -93,8 +57,57 @@ This repository provisions a complete migration workshop environment on OpenShif
 | **Showroom** | Antora-based workshop lab guide |
 | **OLS (Lightspeed)** | AI assistant with MCP Gateway integration |
 | **LiteMaaS** | LLM proxy for model access |
-| **Migration Toolkit RHCL** | Mushino GUI for 3scale → Connectivity Link (`helmApps.migration-toolkit-rhcl`). Chart: [maximilianoPizarro/migration-toolkit-rhcl](https://github.com/maximilianoPizarro/migration-toolkit-rhcl); upstream: [nmushino/migration-toolkit-rhcl](https://github.com/nmushino/migration-toolkit-rhcl) |
+| **APIShift** | Migration GUI with the same core path as Migration Toolkit, plus **AI model assist** and Developer Hub registration (`helmApps.apishift`). Chart: [Everything-is-Code/apishift](https://github.com/Everything-is-Code/apishift) |
+| **Migration Toolkit RHCL** | Guided Mushino GUI for 3scale → Connectivity Link (`helmApps.migration-toolkit-rhcl`). Chart: [maximilianoPizarro/migration-toolkit-rhcl](https://github.com/maximilianoPizarro/migration-toolkit-rhcl); upstream: [nmushino/migration-toolkit-rhcl](https://github.com/nmushino/migration-toolkit-rhcl) |
 | **Kuadrant Console** | OpenShift Console plugin for Connectivity Link (`helmApps.custom-rhcl-console`). Docs: [custom-rhcl-console](https://maximilianopizarro.github.io/custom-rhcl-console/) |
+
+### Migration Tooling Deep Dive
+
+This quickstart ships **three complementary UIs** for the Connectivity Link journey. **APIShift** and **Migration Toolkit** perform the same 3scale → Connectivity Link migration; APIShift additionally supports **AI models** (via `litemaas`) and Developer Hub catalog registration. **Kuadrant Console** covers day-2 API product / key / metrics operations.
+
+![Kuadrant Console Architecture](docs/images/kuadrant-console-arch.png)
+
+#### Kuadrant Console (`custom-rhcl-console`)
+
+OpenShift Console **dynamic plugin** (display name: *Connectivity Link*) that operates on Kuadrant CRDs through the Console API proxy.
+
+| Capability | Details |
+|------------|---------|
+| **API Products** | List/detail for `APIProduct`, discovered plans, OpenAPI / Swagger UI deep links |
+| **API Keys** | Create Secret + `APIKey` CR, approve/reject via label workflow, Reveal Key from referenced Secret |
+| **Traffic & cost** | Overview metrics via Thanos/Prometheus; deep links into Grafana RHCL dashboards |
+| **Traces** | Tempo deep links when a `TempoStack` / Tempo monolith is present |
+| **Namespace** | Must be `custom-rhcl-console` (plugin ConfigMap lookups are hardcoded) |
+| **Image** | `quay.io/maximilianopizarro/custom-rhcl-console:v0.1.2` |
+
+Helm entry: `connectivityLink.helmApps` → `id: custom-rhcl-console` in [`examples/helm/values.yaml`](examples/helm/values.yaml). Demo APIs + gateway live in `kuadrant-console-demo`.
+
+#### Migration Toolkit RHCL (`migration-toolkit-rhcl`)
+
+Quarkus backend + PatternFly frontend that walks operators through connecting to 3scale, discovering Products/Backends, and generating Connectivity Link manifests. Same core migration path as APIShift; does **not** integrate AI models.
+
+| Item | Value |
+|------|-------|
+| **Route** | `https://migration-toolkit.<cluster-domain>` |
+| **Namespace** | `migration-toolkit` |
+| **Images** | `quay.io/maximilianopizarro/migration-toolkit-rhcl-{backend,frontend}:v0.1.0` |
+| **Defaults** | `THREESCALE_DEFAULT_URL` / `THREESCALE_DEFAULT_TOKEN` (via Helm `backend.threescale.*`) pre-fill the Connection form (`GET /api/defaults`) |
+| **Storage** | In-cluster PostgreSQL |
+
+#### APIShift (`apishift`)
+
+Same migration capabilities as Migration Toolkit RHCL (discover 3scale → generate Connectivity Link policies), with two extras: **AI model assist** (`litemaas.*`) and **Developer Hub** registration via the Scaffolder API.
+
+| Item | Value |
+|------|-------|
+| **Route** | `https://gateforge-gateforge.<cluster-domain>` (cluster host; product name is APIShift) |
+| **Namespace** | `gateforge` |
+| **3scale** | `threescale.adminApi.url` + `accessToken` (set in ArgoCD `valuesObject`, not committed) |
+| **Developer Hub** | `developerHub.scaffolderToken` = RHDH `BACKEND_SECRET` |
+| **AI assist** | LiteMaaS / MaaS endpoint + model from `litemaas.*` (differentiation vs Migration Toolkit) |
+| **Images** | `quay.io/maximilianopizarro/gateforge-{backend,frontend}:latest` |
+
+> **Tip:** After a fresh deploy, verify APIShift can register catalog entities. A `401` on `confirm-registration` usually means `scaffolderToken` is still the placeholder — patch the ArgoCD Application `field-content-helm-apishift` with the real `secrets-rhdh` / `BACKEND_SECRET` value.
 
 ### Software Templates
 
@@ -265,6 +278,28 @@ A `devspaces` OIDC client is registered in the Keycloak `backstage` realm. DevSp
 | Container Images (pre-pulled) | — | — | 113 GB |
 | **Fixed total** | **50 vCPU** | **88 Gi** | **468 GB** |
 
+#### Operator / Stack Footprint (approximate steady-state)
+
+Use this table when sizing a **quickstart / demo** cluster before applying `userCount` scaling:
+
+| Stack | Namespace(s) | Approx RAM | Notes |
+|-------|--------------|------------|-------|
+| **Service Mesh (Istio ambient)** | `istio-system`, `istio-cni`, `ztunnel` | ~4 Gi | Ambient profile + gateway pods |
+| **Connectivity Link / Kuadrant** | `kuadrant-system` | ~2 Gi | Authorino + Limitador + RHCL operator |
+| **Observability** | `openshift-cluster-observability-operator`, `openshift-tempo`, OTel | ~3 Gi | Grafana, Thanos querier, Tempo, collectors |
+| **Developer Hub** | `developer-hub`, `rhdh-operator` | ~2 Gi | Backstage + dynamic plugins |
+| **3scale** | `3scale-system` | ~4 Gi | APIcast + system + zync |
+| **Migration UIs** | `gateforge`, `migration-toolkit`, `custom-rhcl-console` | ~1.5 Gi | APIShift + Migration Toolkit + console plugin |
+| **Identity / SCM** | `rhbk-operator`, `gitea` | ~3 Gi | Keycloak + Gitea + DB |
+
+#### Quickstart Cluster Profiles (control plane + workers)
+
+| Profile | Users | Control plane | Workers | Worker size (each) | When to use |
+|---------|-------|---------------|---------|--------------------|-------------|
+| **Minimum viable** | ~30 | 3 masters | **3** | 16 vCPU / 64 Gi | Smoke test / PoC without full DevSpaces load |
+| **Standard demo** | ~100 | 3 masters | **6** | 16–32 vCPU / 64–128 Gi | Side-by-side 3scale + CL + migration UIs |
+| **Full workshop** | 200 | 3 masters (**16 vCPU / 64 Gi**) | **8–12** | 32 vCPU / 128 Gi (m5.8xlarge) | RHDP workshop with concurrent DevSpaces |
+
 #### Scaling at 200 Users — Key Considerations
 
 At 200 users the following platform components become scale-sensitive:
@@ -352,6 +387,73 @@ userCount: 100
 # For 200 users
 userCount: 200
 ```
+
+## Configuring an AI / LLM Model (Helm values)
+
+A single `litemaas` block feeds **OpenShift Lightspeed (OLS)**, **Developer Hub Lightspeed**, **openshift-mcp-server**, and **APIShift** AI assist. Prefer `litemaas.*` over the legacy `maas.*` aliases.
+
+In [`examples/helm/values.yaml`](examples/helm/values.yaml):
+
+```yaml
+litemaas:
+  enabled: true
+  # Injected by RHDP / Argo valuesObject — never commit real keys
+  apiKey: ""
+  apiUrl: "https://maas-rhdp.apps.maas.redhatworkshops.io/v1"
+  model: "qwen3-14b"
+
+# Legacy aliases (fallback for older overlays)
+maas:
+  apiKey: ""
+  endpoint: "https://maas-rhdp.apps.maas.redhatworkshops.io/v1"
+  model: "qwen3-14b"
+
+lightspeed:
+  llmApiKey: ""
+  llmEndpoint: "https://maas-rhdp.apps.maas.redhatworkshops.io/v1"
+```
+
+### How to add or change a model
+
+1. Set `litemaas.apiUrl` to your MaaS / OpenAI-compatible base URL (must end with `/v1` if the provider expects that path).
+2. Set `litemaas.model` to the model id exposed by the provider (example: `qwen3-14b`).
+3. Supply `litemaas.apiKey` via RHDP injection or by patching the ArgoCD Application `valuesObject` / Secret — **do not commit keys**.
+4. Sync ArgoCD apps that consume the value (`openshift-lightspeed`, `apishift`, MCP server). Restart pods if Secrets were patched outside Helm.
+
+Example ArgoCD patch pattern (cluster-local only):
+
+```bash
+# After RHDP injects the key, or when rotating:
+oc -n openshift-gitops patch application field-content-helm \
+  --type merge -p '{"spec":{"source":{"helm":{"valuesObject":{"litemaas":{"apiKey":"<KEY>","model":"qwen3-14b"}}}}}}'
+```
+
+Also see [Manual Credentials](#manual-credentials-not-stored-in-git) for LiteLLM virtual-key wiring.
+
+## Service Mesh Patterns (EnvoyFilter / Lua)
+
+Connectivity Link runs on **Istio Gateway API**. When browser clients (Swagger UI, developer portals) call APIs through the same gateway origin, you often need **CORS** and header adaptation that AuthPolicy alone does not provide. This repo demonstrates that with an Istio `EnvoyFilter` Lua script on the demo gateway.
+
+![Service Mesh EnvoyFilter — CORS preflight and Bearer → X-API-Key mapping](docs/images/service-mesh-envoyfilter.png)
+
+**Resource:** `EnvoyFilter/demo-gateway-cors-bearer` in [`examples/helm/components/kuadrant-console-demo/templates/all.yaml`](examples/helm/components/kuadrant-console-demo/templates/all.yaml)
+
+| Problem | Lua / EnvoyFilter behavior |
+|---------|----------------------------|
+| Browser **CORS preflight** (`OPTIONS`) blocked by auth | Intercept `OPTIONS` with an `Origin` header → respond `204` with `Access-Control-Allow-*` (short-circuit; never hits Authorino) |
+| Swagger UI sends `Authorization: Bearer <api-key>` but AuthPolicy expects `X-API-Key` | On request, if Bearer is present and `X-API-Key` is absent, copy the token into `x-api-key` |
+| Response missing CORS headers | On response, `replace` `access-control-allow-origin` / expose headers (avoid duplicate `*,*` headers) |
+
+**When to use this pattern**
+
+- Swagger / Microcks / Console “Try it out” against a Kuadrant-protected gateway
+- Bridging OAuth-style Bearer UX to API-key AuthPolicies without changing the backend
+- Workshop demos where the OpenAPI `servers[].url` points at the **gateway**, not the mock service
+
+**When not to use it**
+
+- Production multi-tenant portals that need strict origin allow-lists and credentials cookies (`Access-Control-Allow-Origin: *` + credentials is invalid)
+- Prefer Gateway API / Envoy extension policies if your platform version supports first-class CORS CRDs
 
 ## Getting Started
 
@@ -452,15 +554,29 @@ All services use the cluster domain pattern `apps.<cluster-domain>`:
 | **Gitea** | `https://gitea-gitea.apps.<domain>` |
 | **ArgoCD** | `https://openshift-gitops-server-openshift-gitops.apps.<domain>` |
 | **DevSpaces** | `https://devspaces.apps.<domain>` |
-| **Showroom** | `https://showroom.apps.<domain>` |
+| **Showroom** | `https://showroom-showroom.apps.<domain>` (also `showroom.apps.<domain>` on some clusters) |
 | **Registration Portal** | `https://workshop-registration.apps.<domain>` |
 | **Registration Admin** | `https://workshop-registration.apps.<domain>/admin` |
-| **Keycloak** | `https://rhbk.apps.<domain>` |
+| **Keycloak (RHBK)** | `https://rhbk.apps.<domain>` |
 | **Mailpit** | `https://n8n-mailpit-openshift-lightspeed.apps.<domain>` |
 | **Grafana** | `https://grafana-observability.apps.<domain>` |
 | **Kiali** | `https://kiali-openshift-cluster-observability-operator.apps.<domain>` |
 | **Thanos Querier** | `https://thanos-querier.apps.<domain>` |
+| **APIShift** | `https://gateforge-gateforge.apps.<domain>` |
+| **Migration Toolkit** | `https://migration-toolkit.apps.<domain>` |
+| **Kuadrant Console** | OpenShift Console → *Connectivity Link* plugin |
+| **Microcks** | `https://microcks.apps.<domain>` |
 | **Lightspeed** | Available from OpenShift Console |
+
+### Retrieve console credentials
+
+For all non–OpenShift-OAuth admin consoles (ArgoCD, Grafana, Gitea, Keycloak, 3scale, APIShift, Migration Toolkit, etc.):
+
+```bash
+./scripts/get-credentials.sh
+```
+
+Requires a logged-in `oc` context with cluster-admin (or equivalent) read access to Secrets and Routes.
 
 #### Registration Portal API Endpoints
 
@@ -634,11 +750,15 @@ For a fresh installation, run these prompts in sequence to validate the full sta
 
 ## Documentation
 
-- [Workshop (GitHub Pages)](https://maximilianopizarro.github.io/from-3scale-to-connectivity-link/) - Full workshop guide
+- [Workshop (GitHub Pages)](https://maximilianopizarro.github.io/from-3scale-to-connectivity-link/) - Full workshop guide (Antora showroom)
+- Showroom modules: [11 Kuadrant Console](showroom/content/modules/ROOT/pages/11-kuadrant-console.adoc) · [12 Migration Toolkit](showroom/content/modules/ROOT/pages/12-migration-toolkit.adoc) · [13 APIShift](showroom/content/modules/ROOT/pages/13-apishift-gateforge.adoc)
+- [Architecture diagrams](docs/images/) - Cluster topology, migration flow, console architecture, Service Mesh EnvoyFilter
+- [`scripts/get-credentials.sh`](scripts/get-credentials.sh) - Print URLs and admin credentials for non-OAuth consoles
 - [Migration Specification](docs/SHOWROOM-UPDATE-SPEC.md) - 3scale vs Connectivity Link: definitions, comparison tables, migration flows
 - [examples/helm/README.md](examples/helm/README.md) - Helm deployment guide
 - [examples/ansible/README.md](examples/ansible/README.md) - Ansible deployment guide
 - [docs/ansible-developer-guide.md](docs/ansible-developer-guide.md) - In-depth Ansible patterns
+- [Kuadrant Console plugin docs](https://maximilianopizarro.github.io/custom-rhcl-console/)
 - [Red Hat 3scale Documentation](https://docs.redhat.com/en/documentation/red_hat_3scale_api_management/) - Official 3scale docs
 - [Red Hat Connectivity Link Documentation](https://docs.redhat.com/en/documentation/red_hat_connectivity_link/) - Official Connectivity Link docs
 
@@ -661,6 +781,7 @@ from-3scale-to-connectivity-link/
 │   │   │   ├── developer-hub/            # Backstage instance
 │   │   │   ├── workshop-registration/    # Self-service registration portal
 │   │   │   ├── showroom/                 # Workshop lab guide
+│   │   │   ├── kuadrant-console-demo/    # Demo APIs + EnvoyFilter CORS/Bearer
 │   │   │   └── ...                       # Other infrastructure components
 │   │   └── software-templates/            # Backstage scaffolder templates
 │   │       ├── templates-catalog.yaml     # Auto-import catalog
@@ -669,7 +790,13 @@ from-3scale-to-connectivity-link/
 │   │       ├── neuralbank-backend/        # REST API template
 │   │       └── neuralbank-frontend/       # SPA frontend template
 │   └── ansible/                           # Ansible-based deployment example
+├── showroom/                              # Antora workshop (GitHub Pages)
+│   └── content/modules/ROOT/pages/        # Modules 01–13 (incl. Console / Toolkit / APIShift)
+├── scripts/
+│   ├── get-credentials.sh                 # Print non-OAuth console URLs + secrets
+│   ├── generate-demo-traffic.sh
+│   └── check-cnv-readiness.sh
 ├── roles/
 │   └── ocp4_workload_field_content/       # AgnosticD workload role
-└── docs/                                  # Developer guides, migration spec
+└── docs/                                  # Guides, migration spec, architecture PNGs
 ```

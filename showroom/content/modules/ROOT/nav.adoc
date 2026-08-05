@@ -9,3 +9,6 @@
 * xref:08-verify-test.adoc[8. Verify and Test]
 * xref:09-deploy-vm-apikey.adoc[9. Deploy VM (API Key)]
 * xref:10-summary.adoc[10. Summary]
+* xref:11-kuadrant-console.adoc[11. Kuadrant Console]
+* xref:12-migration-toolkit.adoc[12. Migration Toolkit]
+* xref:13-apishift-gateforge.adoc[13. APIShift]

@@ -1,0 +1,93 @@
+= APIShift
+
+*APIShift* is an end-to-end migration console. It performs the *same* 3scale → Connectivity Link migration path as the xref:12-migration-toolkit.adoc[Migration Toolkit], and adds two capabilities on top:
+
+* *AI model assist* (shared workshop `litemaas` endpoint / model)
+* *Developer Hub* catalog registration via the Scaffolder API
+
+== Migration flow
+
+image::migration-flow.png["3scale to Connectivity Link via APIShift and Migration Toolkit — same path; APIShift adds AI"]
+
+[cols="1,2",options="header"]
+|===
+| Stage | What happens
+
+| Discover
+| Connect to 3scale Admin API (`threescale.adminApi.url` + `accessToken`)
+
+| Transform
+| Map Products / Plans / auth models to Gateway API + Kuadrant policies
+
+| Target
+| Apply or stage Connectivity Link resources (`connectivityLink.targetNamespace`, shared Istio gateway strategy)
+
+| Register
+| Call Developer Hub Scaffolder (`developerHub.scaffolderUrl` + `scaffolderToken`) to create catalog tasks/entities
+
+| AI assist (APIShift only)
+| Optional calls to the workshop LLM (`litemaas.apiUrl` / `model` / `apiKey`)
+|===
+
+== Access
+
+Typical route on this cluster (host name may still say `gateforge`; the product is *APIShift*):
+
+----
+https://gateforge-gateforge.<cluster-domain>
+----
+
+Print URLs and related secrets:
+
+----
+./scripts/get-credentials.sh
+----
+
+== Required tokens (not OpenShift OAuth)
+
+APIShift does *not* use OpenShift OAuth for its migration APIs. Two tokens must be real (not placeholders) after a fresh deploy:
+
+[cols="2,2,2",options="header"]
+|===
+| Setting | Source on cluster | Symptom if wrong
+
+| `threescale.adminApi.accessToken`
+| Secret `system-seed` in `3scale-system` → `ADMIN_ACCESS_TOKEN`
+| Cannot list 3scale Products
+
+| `developerHub.scaffolderToken`
+| Secret `secrets-rhdh` in `developer-hub` → `BACKEND_SECRET`
+| `401 Unauthorized` on `confirm-registration`
+|===
+
+On this GitOps stack those values live in the ArgoCD Application `field-content-helm-apishift` `spec.source.helm.valuesObject` (or equivalent). Patch them after install if the chart still has `placeholder-set-in-argocd`.
+
+== AI assist (APIShift differentiator)
+
+APIShift can call the workshop LLM endpoint using the shared `litemaas` values. Migration Toolkit does *not* use AI models.
+
+[source,yaml]
+----
+litemaas:
+  apiUrl: "https://maas-rhdp.apps.maas.redhatworkshops.io/v1"
+  model: "qwen3-14b"
+  apiKey: ""   # inject — never commit
+----
+
+See the repository README section *Configuring an AI / LLM Model*.
+
+== Walkthrough
+
+. Open APIShift → configure / verify 3scale connection.
+. Select a Product (for example Neuralbank or NFL Wallet) and create a migration plan.
+. Review generated Connectivity Link objects (AuthPolicy / OIDCPolicy, RateLimitPolicy, HTTPRoute).
+. Confirm registration into Developer Hub — the new Component should appear in the catalog.
+. Open the component in Developer Hub (Topology / CI / CD tabs) and compare with the side-by-side CL namespaces.
+
+== Related UIs
+
+* xref:12-migration-toolkit.adoc[Migration Toolkit] — same migration path without AI / catalog registration
+* xref:11-kuadrant-console.adoc[Kuadrant Console] — operate API Products and keys after migration
+* xref:07-run-migration.adoc[Run the Migration Template] — Backstage Software Template path
+
+Chart: https://github.com/Everything-is-Code/apishift

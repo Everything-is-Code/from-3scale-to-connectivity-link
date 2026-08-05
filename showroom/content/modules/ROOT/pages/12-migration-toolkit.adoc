@@ -1,0 +1,79 @@
+= Migration Toolkit RHCL
+
+The *Migration Toolkit* is a guided Quarkus + PatternFly application that connects to a 3scale Admin API, discovers Products / Backends / Plans, and helps you produce Connectivity Link (Kuadrant) configuration.
+
+== Where it fits
+
+image::migration-flow.png["Migration flow — 3scale source through Migration Toolkit and APIShift into Connectivity Link"]
+
+APIShift and Migration Toolkit perform the *same* 3scale → Connectivity Link migration. Prefer xref:13-apishift-gateforge.adoc[APIShift] when you also need *AI model assist* or automated catalog registration into Developer Hub.
+
+== Access
+
+. Obtain the URL (typical pattern):
++
+----
+https://migration-toolkit.<cluster-domain>
+----
+. Or run the helper script from a machine with `oc` access:
++
+----
+./scripts/get-credentials.sh
+----
+. Open the *Connection* page.
+
+== Pre-configured 3scale connection
+
+On this workshop cluster the toolkit can ship with defaults from environment variables:
+
+* `THREESCALE_DEFAULT_URL` — Admin portal URL (for example `https://3scale-admin.<domain>`)
+* `THREESCALE_DEFAULT_TOKEN` — Admin access token (from Secret `system-seed` key `ADMIN_ACCESS_TOKEN`)
+
+The backend exposes `GET /api/defaults`. The frontend auto-fills the Connection form when `threescale.configured` is true.
+
+Helm values (chart `migration-toolkit-rhcl`):
+
+[source,yaml]
+----
+backend:
+  threescale:
+    defaultUrl: "https://3scale-admin.<domain>"
+    defaultToken: "<from Secret / Argo valuesObject>"
+----
+
+IMPORTANT: Never commit real access tokens to Git. Inject them via ArgoCD `valuesObject` or Secret references.
+
+== Typical walkthrough
+
+. Open Migration Toolkit → confirm 3scale URL + token are filled → *Test connection*.
+. Create or select a migration *project*.
+. Discover Products and Application Plans from 3scale.
+. Review the proposed Connectivity Link mapping (Gateway API HTTPRoute, AuthPolicy / OIDCPolicy, RateLimitPolicy, PlanPolicy, APIProduct).
+. Export or apply manifests into the target namespace (GitOps via Gitea + ArgoCD in the full workshop path).
+
+== Runtime components
+
+[cols="1,2",options="header"]
+|===
+| Resource | Purpose
+
+| Namespace `migration-toolkit`
+| Isolates the toolkit Deployment + PostgreSQL
+
+| Frontend Route
+| PatternFly UI
+
+| Backend Service
+| Quarkus REST API + `/api/defaults`
+
+| PostgreSQL
+| Stores projects and connection settings
+|===
+
+Chart: https://github.com/maximilianoPizarro/migration-toolkit-rhcl
+
+== Next
+
+. Validate generated policies with xref:08-verify-test.adoc[Verify and Test].
+. Operate day-2 APIs with xref:11-kuadrant-console.adoc[Kuadrant Console].
+. Or run the same migration with AI + Developer Hub registration via xref:13-apishift-gateforge.adoc[APIShift].

@@ -4,6 +4,8 @@ This module presents the side-by-side architecture of the migration environment.
 
 == Cluster layout
 
+image::cluster-topology.png["OpenShift cluster topology — operators, namespaces, and relationships for the migration workshop"]
+
 image::cluster-layout.svg["3scale source workloads and Connectivity Link target workloads in the same OpenShift cluster plus Developer Hub"]
 
 == Platform components
@@ -35,7 +37,20 @@ image::cluster-layout.svg["3scale source workloads and Connectivity Link target 
 
 | *Grafana / Kiali*
 | Observability stack: dashboards (Grafana), service mesh topology (Kiali).
+
+| *Kuadrant Console*
+| OpenShift Console dynamic plugin for API Products, API Keys, traffic, and Grafana deep links. See xref:11-kuadrant-console.adoc[module 11].
+
+| *Migration Toolkit*
+| Guided 3scale → Connectivity Link wizard. See xref:12-migration-toolkit.adoc[module 12].
+
+| *APIShift*
+| Same migration path as Migration Toolkit, plus AI models and Developer Hub registration. See xref:13-apishift-gateforge.adoc[module 13].
 |===
+
+== Migration tooling overview
+
+image::migration-flow.png["Migration flow from 3scale through APIShift and Migration Toolkit into Connectivity Link — both tools share the path; APIShift adds AI"]
 
 == Request flow comparison
 
@@ -50,6 +65,12 @@ APIcast validates credentials against the 3scale backend (Redis). MappingRules d
 image::flow-connectivity-link.svg["Request path — Client; OpenShift Route; Istio Gateway; Backend Service with policies"]
 
 The Istio Gateway delegates authentication to Authorino and rate limiting to Limitador. Policies are attached directly to the Gateway or HTTPRoute as Kubernetes CRDs.
+
+=== Service Mesh pattern — CORS and Bearer mapping (EnvoyFilter)
+
+Browser clients such as Swagger UI often need CORS preflight handling and may send `Authorization: Bearer` while AuthPolicy expects `X-API-Key`. The demo gateway uses an Istio `EnvoyFilter` with Lua for that adaptation:
+
+image::service-mesh-envoyfilter.png["EnvoyFilter Lua swimlanes — CORS preflight short-circuit and Bearer to X-API-Key mapping"]
 
 == Namespace mapping
 

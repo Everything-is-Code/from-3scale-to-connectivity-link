@@ -436,9 +436,9 @@ spec:
             local EXPOSE_HEADERS = "Content-Length, Content-Range, X-RateLimit-Limit, X-RateLimit-Remaining"
 
             function envoy_on_request(handle)
-              local origin = handle:headers():get("origin")
+              local origin = handle:headers():get("origin") or "*"
 
-              if handle:headers():get(":method") == "OPTIONS" and origin then
+              if handle:headers():get(":method") == "OPTIONS" and origin ~= "*" then
                 handle:respond(
                   {
                     [":status"] = "204",
@@ -453,6 +453,8 @@ spec:
                 return
               end
 
+              handle:streamInfo():dynamicMetadata():set("cors_lua", "origin", origin)
+
               local auth = handle:headers():get("authorization")
               if auth and auth:sub(1, 7):lower() == "bearer " then
                 local key = auth:sub(8)
@@ -463,7 +465,11 @@ spec:
             end
 
             function envoy_on_response(handle)
-              handle:headers():add("access-control-allow-origin", "*")
-              handle:headers():add("access-control-allow-credentials", "true")
+              local meta = handle:streamInfo():dynamicMetadata():get("cors_lua")
+              local origin = (meta and meta["origin"]) or "*"
+              handle:headers():add("access-control-allow-origin", origin)
+              if origin ~= "*" then
+                handle:headers():add("access-control-allow-credentials", "true")
+              end
               handle:headers():add("access-control-expose-headers", EXPOSE_HEADERS)
             end

@@ -489,6 +489,14 @@ spec:
     route:
       enabled: true
       termination: edge
+  multitenancy:
+    enabled: true
+    mode: openshift
+    authentication:
+      - tenantName: dev
+        tenantId: "f4c5a872-4ed1-4d3e-8b9a-1a2b3c4d5e6f"
+      - tenantName: prod
+        tenantId: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
   observability:
     metrics:
       serviceMonitors:
@@ -501,6 +509,68 @@ spec:
         enabled: true
       http:
         enabled: true
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: tempomonolithic-traces-reader
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+rules:
+  - apiGroups: ["tempo.grafana.com"]
+    resources: ["dev"]
+    resourceNames: ["traces"]
+    verbs: ["get"]
+  - apiGroups: ["tempo.grafana.com"]
+    resources: ["prod"]
+    resourceNames: ["traces"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: tempomonolithic-traces-writer
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+rules:
+  - apiGroups: ["tempo.grafana.com"]
+    resources: ["dev"]
+    resourceNames: ["traces"]
+    verbs: ["create"]
+  - apiGroups: ["tempo.grafana.com"]
+    resources: ["prod"]
+    resourceNames: ["traces"]
+    verbs: ["create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: tempomonolithic-traces-reader
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tempomonolithic-traces-reader
+subjects:
+  - kind: Group
+    apiGroup: rbac.authorization.k8s.io
+    name: system:authenticated
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: tempomonolithic-traces-writer
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tempomonolithic-traces-writer
+subjects:
+  - kind: Group
+    apiGroup: rbac.authorization.k8s.io
+    name: system:authenticated
 ---
 apiVersion: observability.openshift.io/v1alpha1
 kind: UIPlugin

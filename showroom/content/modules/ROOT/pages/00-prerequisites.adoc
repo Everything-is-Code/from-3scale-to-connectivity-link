@@ -45,6 +45,8 @@ NOTE: The public https://maximilianopizarro.github.io/from-3scale-to-connectivit
 
 Operators and instructors should size the OpenShift cluster *before* inviting users. Scaling is driven by a single Helm value: `userCount` in `examples/helm/values.yaml`.
 
+IMPORTANT: Workshop infrastructure is installed from the Helm *App-of-Apps* chart under https://github.com/maximilianoPizarro/from-3scale-to-connectivity-link/tree/main/examples/helm[`examples/helm/`]. That chart renders Argo CD `Application` resources for operators, demo apps, showroom, and migration UIs. The child chart `components/applicationsets` (enabled as `connectivity-link-applicationsets` in `values.yaml`) deploys the Argo CD *ApplicationSet* that discovers user Git repos in Gitea and keeps per-user Applications in sync — it is part of the same install path, not a separate manual step.
+
 === Quickstart cluster profiles
 
 [cols="2,1,2,1,2",options="header"]

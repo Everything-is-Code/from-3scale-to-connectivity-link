@@ -10,6 +10,8 @@ Deploy workloads using an Argo CD App of Apps pattern. The root chart renders Ar
 
 RHDP injects `deployer.domain` and `deployer.apiUrl`. Optional **LiteMaaS / MaaS** ordering injects `litemaas.apiUrl`, `litemaas.apiKey`, and `litemaas.model` into this chart’s values when enabled.
 
+**ApplicationSet (user GitOps):** The component [`components/applicationsets`](components/applicationsets/) — listed in `values.yaml` as `connectivity-link-applicationsets` — deploys the Argo CD **ApplicationSet** (plus Gitea repo-creds helpers) that discovers user repositories after the Developer Hub Golden Path publishes manifests. It is part of this Helm install, not a separate bootstrap. Keep that app **enabled** for multi-user workshops.
+
 ## Architecture
 
 ```
@@ -20,6 +22,7 @@ examples/helm/
 │   ├── applications.yaml              # hello-world, showroom, optional single-operator
 │   └── connectivity-link-applications.yaml   # connectivity-link Argo CD apps
 └── components/
+    ├── applicationsets/               # ApplicationSet: Gitea SCM → per-user Applications
     ├── operator/                      # Optional single OLM subscription (template)
     ├── hello-world/
     ├── showroom/                      # Lab guide (from-3scale-to-connectivity-link)
@@ -31,7 +34,6 @@ examples/helm/
     ├── connectivity-link-neuralbank-stack/
     └── …                              # see values.yaml → connectivityLink.apps
 ```
-
 Connectivity-link manifests are **vendored** from [connectivity-link](https://gitlab.com/maximilianoPizarro/connectivity-link): plain YAML directories were rendered with `kubectl kustomize` into `templates/all.yaml` where applicable; the `operators` and `neuralbank-stack` upstream Helm charts were copied as subcharts.
 
 ## Configuration

@@ -9,6 +9,8 @@
 
 Migrate API management from *Red Hat 3scale API Management* to *Red Hat Connectivity Link* (Kuadrant) with a clear set of strategies — not a single button.
 
+*Why migrate (business view):* teams want APIs that ship with the same GitOps cadence as the rest of the platform — less dual admin planes, clearer ownership for platform vs product teams, and a path that does not lock gateway policy into a separate CMS. Connectivity Link puts auth, rate limits, and discovery next to the workloads on Gateway API.
+
 The workshop ships *four complementary approaches*. Explore pre-deployed 3scale and Connectivity Link apps side by side, then pick the path that fits your team.
 
 NOTE: URLs that contain `\{cluster_domain}` or `apps.cluster.example.com` are *placeholders*. On a *deployed showroom* they are replaced automatically with your cluster ingress domain. On https://maximilianopizarro.github.io/from-3scale-to-connectivity-link/[GitHub Pages] they remain examples and will not resolve — use this site as documentation preview only.
@@ -69,6 +71,8 @@ TIP: Run at least the *Golden Path* (module 7) in the lab. Use *Toolkit* or *API
 | `nfl-wallet-prod`
 |===
 
+NOTE: Namespace names are *not* symmetric on purpose. Neuralbank CL lives in `neuralbank-stack` (full stack chart name); NFL Wallet CL lives in `nfl-wallet-prod` (existing prod-style target). Source namespaces both use the `-3scale` suffix. Memorize the pair from this table — do not assume `-stack` / `-cl` for every app.
+
 == Environment access
 
 Your credentials:
@@ -128,11 +132,13 @@ Strategy entry points first; then supporting platform tools.
 | https://console-openshift-console.{cluster_domain}
 |===
 
-TIP: Use the *Terminal* tab for `oc` / `curl` in this showroom (it loads the embedded terminal at `/terminal/`). The *Developer Hub* tab loads Backstage in a panel; if you see a blank or broken page (OIDC redirects often block iframe login), open Developer Hub in a new browser tab from *Workshop platform links* below instead.
+WARNING: Prefer the showroom *Terminal* tab for `oc` / `curl` (`/terminal/`). The *Developer Hub* tab embeds Backstage in an iframe — OIDC login often fails inside that frame. If the panel is blank or stuck on login, open Developer Hub in a *new browser tab* from the links table above.
 
 == Workshop flow
 
-image::workshop-flow.svg[Workshop flow from Developer Hub through Gitea and Argo CD to OpenShift and Kuadrant policies]
+image::workshop-flow.svg["Golden Path flow (left to right): Developer Hub migration template → Gitea → Argo CD sync → OpenShift → Gateway API → Kuadrant policies. Five large labeled boxes; best viewed full width on projector or laptop."]
+
+TIP: On a shared laptop or projector, zoom the browser or open the image full-width so the five boxes stay readable.
 
 Text alternative — Golden Path (Developer Hub) steps:
 

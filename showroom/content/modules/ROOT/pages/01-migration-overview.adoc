@@ -52,7 +52,7 @@ You will *explore* source and target first (modules 3–6), then *execute* the G
 | A pattern-based routing rule that maps HTTP method + URL path to a metric.
 
 | *APIcast*
-| The 3scale API gateway based on NGINX/OpenResty. Handles authentication, rate limiting, and proxying.
+| The 3scale API gateway based on NGINX/OpenResty. Handles authentication, rate limiting, and proxying. Docs: https://docs.redhat.com/en/documentation/red_hat_3scale_api_management/[Red Hat 3scale].
 
 | *Application Plan*
 | Defines rate limits, quotas, and pricing tiers for API consumers.
@@ -89,26 +89,30 @@ You will *explore* source and target first (modules 3–6), then *execute* the G
 | Enforces rate limits on a Gateway or HTTPRoute. Counters can be global or per-identity.
 
 | *PlanPolicy*
-| Defines tiered usage plans (free/basic/pro) with different rate limits via CEL predicates.
+| Defines tiered usage plans (free/basic/pro) with different rate limits via https://github.com/google/cel-spec[CEL] predicates (expression language used in Kuadrant policies).
 
 | *APIProduct*
 | Publishes an API to the Kuadrant developer portal (Backstage plugin).
 
 | *Authorino*
-| The policy engine that evaluates AuthPolicy rules (JWT, API Key, OPA, pattern matching).
+| The policy engine that evaluates AuthPolicy rules (JWT, API Key, OPA, pattern matching). Docs: https://docs.kuadrant.io/latest/authorino/docs/getting-started/[Authorino getting started].
 
 | *Limitador*
-| The rate-limiting engine that enforces RateLimitPolicy counters via Envoy integration.
+| The rate-limiting engine that enforces RateLimitPolicy counters via Envoy integration. Docs: https://docs.kuadrant.io/latest/architecture/docs/design/architectural-overview-v1/[Kuadrant architecture] · https://docs.kuadrant.io/latest/kuadrant-operator/doc/user-guides/observability/limitador-metrics/[Limitador metrics].
 |===
 
 == Feature comparison
+
+Two smaller tables keep the map readable. Skim the *So what* bullets if you only need the takeaway.
+
+=== Gateway, routing, and auth
 
 [cols="2,3,3",options="header"]
 |===
 | Feature | Red Hat 3scale | Red Hat Connectivity Link
 
 | *API Gateway*
-| APIcast (NGINX-based, proprietary config)
+| https://docs.redhat.com/en/documentation/red_hat_3scale_api_management/2.16/html/installing_3scale/installing-threescale[APIcast] (NGINX-based, proprietary config)
 | Istio Gateway (Envoy-based, Gateway API standard)
 
 | *Routing*
@@ -129,7 +133,14 @@ You will *explore* source and target first (modules 3–6), then *execute* the G
 
 | *Usage Tiers*
 | Application Plans (free/basic/pro)
-| PlanPolicy (CEL predicates on identity metadata)
+| PlanPolicy (https://github.com/google/cel-spec[CEL] predicates on identity metadata)
+|===
+
+=== Portal, GitOps, and observability
+
+[cols="2,3,3",options="header"]
+|===
+| Feature | Red Hat 3scale | Red Hat Connectivity Link
 
 | *Dev Portal*
 | 3scale Developer Portal (CMS-based)
@@ -159,6 +170,12 @@ You will *explore* source and target first (modules 3–6), then *execute* the G
 | External
 | DNSPolicy (Route 53, Cloud DNS)
 |===
+
+=== So what? (if you skip the tables)
+
+* *Gateway moves to standards*: APIcast config → Gateway API + Istio/Envoy you already run on OpenShift.
+* *Policy becomes GitOps YAML*: auth and rate limits are CRDs next to the app, not a second admin plane.
+* *Portal becomes platform DX*: Developer Hub + APIProduct (and Kuadrant Console) replace the 3scale CMS for discovery and keys.
 
 == Why migrate?
 

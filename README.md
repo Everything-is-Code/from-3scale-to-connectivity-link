@@ -472,6 +472,8 @@ Connectivity Link runs on **Istio Gateway API**. When browser clients (Swagger U
 | [examples/helm/](examples/helm/) | Deployment can be expressed as Kubernetes manifests with Helm templating |
 | [examples/ansible/](examples/ansible/) | You need wait-for-ready, secret generation, API calls, or conditional logic |
 
+**Install path (Helm):** Point RHDP / Argo CD at [`examples/helm/`](examples/helm/). That root chart is an **App-of-Apps**: it creates child `Application` resources for the connectivity-link stack (operators, namespaces, Developer Hub, 3scale demos, showroom, migration UIs). Inside the same tree, [`components/applicationsets`](examples/helm/components/applicationsets/) (wired as `connectivityLink.apps` id `connectivity-link-applicationsets` in `values.yaml`) deploys the Argo CD **ApplicationSet** that watches Gitea and spins up per-user Applications after Golden Path scaffolds land in Git. You do not install that ApplicationSet by hand — enable the component and sync the root chart.
+
 ### Quick Start
 
 ```bash
@@ -482,6 +484,7 @@ cd my-content
 # Choose an example and start customizing
 cd examples/helm      # or examples/ansible
 # Edit values.yaml and templates as documented in each example's README
+# Root chart = App-of-Apps; components/applicationsets = Gitea SCM ApplicationSet
 ```
 
 ### Setting the Cluster Domain

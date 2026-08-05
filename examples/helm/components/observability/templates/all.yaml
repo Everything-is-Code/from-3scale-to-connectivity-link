@@ -493,9 +493,6 @@ spec:
     metrics:
       createServiceMonitors: true
       createPrometheusRules: true
-    tracing:
-      sampling_fraction: "1.0"
-      jaeger_agent_endpoint: localhost:6831
   ingestion:
     otlp:
       grpc:

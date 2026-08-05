@@ -183,7 +183,11 @@ spec:
           metrics: false
           priority: 0
       response:
-        success: {}
+        success:
+          headers:
+            x-consumer-id:
+              plain:
+                selector: auth.identity.metadata.name
         unauthenticated:
           body:
             value: '{"error":"Invalid or missing API key. Include header X-API-Key with a valid key."}'
@@ -288,6 +292,48 @@ spec:
     kind: HTTPRoute
     name: {{ .name }}-route
 {{- end }}
+---
+apiVersion: telemetry.istio.io/v1
+kind: Telemetry
+metadata:
+  name: demo-gateway-telemetry
+  namespace: kuadrant-console-demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+  labels:
+    app.kubernetes.io/part-of: kuadrant-console-demo
+spec:
+  selector:
+    matchLabels:
+      gateway.networking.k8s.io/gateway-name: demo-gateway
+  metrics:
+    - providers:
+        - name: prometheus
+      overrides:
+        - match:
+            mode: CLIENT_AND_SERVER
+          tagOverrides:
+            request_headers_x_consumer_id:
+              operation: UPSERT
+              value: "request.headers[\"x-consumer-id\"]"
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: demo-gateway-metrics
+  namespace: kuadrant-console-demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+  labels:
+    app.kubernetes.io/part-of: kuadrant-console-demo
+spec:
+  podMetricsEndpoints:
+    - interval: 30s
+      path: /stats/prometheus
+      port: http-envoy-prom
+  selector:
+    matchLabels:
+      gateway.networking.k8s.io/gateway-name: demo-gateway
 {{- if .Values.tlsPolicy | default false }}
 ---
 apiVersion: kuadrant.io/v1
@@ -356,3 +402,77 @@ spec:
           window: 1h
 {{- end }}
 */}}
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: demo-gateway-cors-bearer
+  namespace: kuadrant-console-demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+  labels:
+    app.kubernetes.io/part-of: kuadrant-console-demo
+spec:
+  workloadSelector:
+    labels:
+      istio.io/gateway-name: demo-gateway
+  configPatches:
+  - applyTo: HTTP_FILTER
+    match:
+      context: GATEWAY
+      listener:
+        filterChain:
+          filter:
+            name: envoy.filters.network.http_connection_manager
+            subFilter:
+              name: envoy.filters.http.router
+    patch:
+      operation: INSERT_BEFORE
+      value:
+        name: envoy.filters.http.cors
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.filters.http.cors.v3.Cors
+  - applyTo: ROUTE_CONFIGURATION
+    match:
+      context: GATEWAY
+    patch:
+      operation: MERGE
+      value:
+        virtual_hosts:
+        - name: "kuadrant-demo.apps.{{ .Values.clusterDomain }}"
+          domains:
+          - "kuadrant-demo.apps.{{ .Values.clusterDomain }}"
+          cors:
+            allow_origin_string_match:
+            - safe_regex:
+                regex: ".*"
+            allow_methods: "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+            allow_headers: "Authorization, Content-Type, X-API-Key, Accept, Origin"
+            expose_headers: "Content-Length, Content-Range, X-RateLimit-Limit, X-RateLimit-Remaining"
+            max_age: "86400"
+            allow_credentials: true
+  - applyTo: HTTP_FILTER
+    match:
+      context: GATEWAY
+      listener:
+        filterChain:
+          filter:
+            name: envoy.filters.network.http_connection_manager
+            subFilter:
+              name: envoy.filters.http.router
+    patch:
+      operation: INSERT_BEFORE
+      value:
+        name: envoy.filters.http.lua
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
+          inline_code: |
+            function envoy_on_request(handle)
+              local auth = handle:headers():get("authorization")
+              if auth and auth:sub(1, 7):lower() == "bearer " then
+                local key = auth:sub(8)
+                if not handle:headers():get("x-api-key") then
+                  handle:headers():add("x-api-key", key)
+                end
+              end
+            end

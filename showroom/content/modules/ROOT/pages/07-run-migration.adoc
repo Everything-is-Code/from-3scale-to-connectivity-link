@@ -364,4 +364,23 @@ All resources should exist and show healthy status.
 
 image::resource-mapping.svg[Mapping from 3scale concepts to Connectivity Link resources]
 
-In the next module you will verify the migrated application and compare it with the 3scale original.
+== Other migration paths (same target)
+
+This module uses the *Software Template* path (scaffolder → Gitea → Argo CD). The lab also ships two GUIs that produce the same Connectivity Link resource types:
+
+[cols="1,2",options="header"]
+|===
+| Tool | When to use it
+
+| xref:12-migration-toolkit.adoc[Migration Toolkit]
+| Guided discovery against 3scale Admin API; no AI
+
+| xref:13-apishift-gateforge.adoc[APIShift]
+| Same migration core + AI models (`litemaas`) + register the component in Developer Hub
+|===
+
+After policies exist, operate keys and traffic with xref:11-kuadrant-console.adoc[Kuadrant Console].
+
+== Next
+
+In the next module you will xref:08-verify-test.adoc[verify the migrated application] and compare it with the 3scale original.

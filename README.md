@@ -604,19 +604,18 @@ curl -s -H "X-Admin-Token: <token>" https://workshop-registration.apps.<domain>/
 
 ## How It Works
 
+Field content is delivered as a Helm **App-of-Apps** chart under [`examples/helm/`](examples/helm/). Argo CD syncs component Applications from this Git repo into the OpenShift cluster. AgnosticD / RHDP reads `demo.redhat.com/userinfo` labels (and related ConfigMaps) to surface URLs and credentials back to the catalog.
+
+```mermaid
+flowchart LR
+  GitRepo["Git repo examples/helm"] -->|ArgoCD App-of-Apps| Cluster["OpenShift workloads"]
+  Cluster -->|demo.redhat.com/userinfo| AgnosticD["AgnosticD / RHDP catalog"]
 ```
-Your Git Repo                    OpenShift Cluster
-┌─────────────┐                 ┌─────────────────────────────┐
-│ Helm Chart  │──── ArgoCD ────▶│ Your Workload               │
-│ (templates, │                 │ (operators, apps, showroom) │
-│  values)    │                 └─────────────────────────────┘
-└─────────────┘                           │
-                                          ▼
-                                ConfigMap with demo.redhat.com/userinfo
-                                          │
-                                          ▼
-                                    AgnosticD picks up user info
-```
+
+High-level topology and migration tooling diagrams:
+
+- ![Cluster topology](docs/images/cluster-topology.png)
+- ![Migration flow](docs/images/migration-flow.png)
 
 ## RHDP Integration
 

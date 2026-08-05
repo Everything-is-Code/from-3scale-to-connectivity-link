@@ -119,12 +119,13 @@ curl -s -H "X-API-Key: nfl-wallet-demo-key-2024" \
   | python3 -m json.tool
 ----
 
-== Step 6: Browse in Developer Hub
+== Step 6: Browse in Developer Hub and Kuadrant Console
 
 . Open *Developer Hub* and search for your migrated component in the *Catalog*.
 . Check the *API* tab — the OpenAPI spec should be available.
 . Check the *Kuadrant* section — the APIProduct should show as Published.
 . Verify the *ArgoCD* annotation links to the correct application.
+. Optional: open xref:11-kuadrant-console.adoc[Kuadrant Console] in OpenShift Console to list the APIProduct, manage keys, and open Swagger against the *gateway* URL (CORS / Bearer mapping may require the demo EnvoyFilter pattern described in module 5).
 
 == Step 7: Validate the complete flow
 

@@ -150,6 +150,8 @@ done
 
 All 10 should return `200`. Extending to 130+ requests in one minute triggers `429 Too Many Requests`.
 
+TIP: A `429` means Limitador is working. For demos that need more headroom, use a Secret with `secret.kuadrant.io/plan-id: pro`, or flush counters with `oc rollout restart deployment/limitador-limitador -n kuadrant-system` (see xref:14-troubleshooting.adoc[Troubleshooting]).
+
 == Step 5: Create your own API Key
 
 [source,bash]
@@ -205,15 +207,19 @@ metadata:
     secret.kuadrant.io/plan-id: "basic"
 ----
 
-== Step 7: Swagger UI
+== Step 7: Swagger UI and gateway CORS
 
-Open in your browser:
+Open Swagger against the *gateway* host (not the backend Service DNS):
 
 ----
 https://nfl-wallet.{cluster_domain}/q/swagger-ui
 ----
 
 Click *Authorize*, enter `nfl-wallet-demo-key-2024`, and test the endpoints directly.
+
+NOTE: Browser “Try it out” often sends `Authorization: Bearer <key>` and a CORS preflight (`OPTIONS`). AuthPolicy expects `X-API-Key`. On the Kuadrant Console demo gateway this workshop ships an Istio *EnvoyFilter* (Lua) that answers CORS preflight and maps Bearer → `X-API-Key`. See the architecture diagram *Service Mesh Pattern — EnvoyFilter Lua* and xref:02-architecture.adoc[Architecture]. For NFL Wallet, prefer the `X-API-Key` header in curl; use Swagger Authorize as API key when the UI offers that scheme.
+
+Day-2 alternative: create and reveal keys in xref:11-kuadrant-console.adoc[Kuadrant Console] instead of only `oc create secret`.
 
 == API Key flow diagram
 

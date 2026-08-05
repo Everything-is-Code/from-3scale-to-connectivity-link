@@ -11,6 +11,8 @@
 
 In this module you will inspect the two applications deployed with *Red Hat 3scale API Management*. These are the *migration source*. Understanding exactly how they are configured is critical for planning the migration to Connectivity Link.
 
+NOTE: This lab migrates routing, auth, and rate limits. 3scale *billing / monetization* and the full *Developer Portal CMS* are out of scope (see xref:01-migration-overview.adoc[What this workshop does not cover]).
+
 == Part 1 — Neuralbank on 3scale (OIDC Authentication)
 
 The `neuralbank-3scale` namespace contains the Neuralbank banking API protected by a 3scale *Product* with OIDC authentication via Keycloak.

@@ -208,19 +208,46 @@ Key takeaway: Connectivity Link reduces the total number of CRDs from *14 resour
 
 | *API docs*
 | ActiveDoc (OpenAPI in 3scale portal)
-| Backstage TechDocs + Swagger UI
+| APIProduct OpenAPI URL + Swagger UI (gateway) + optional TechDocs
 
 | *Key management*
 | 3scale Developer Portal sign-up
-| Developer Hub Kuadrant plugin
+| xref:11-kuadrant-console.adoc[Kuadrant Console] (create / approve / reveal) + Secrets labeled for AuthPolicy
 
 | *Self-service templates*
 | Not available
 | Developer Hub Software Templates generate all manifests
 
+| *Guided migration UIs*
+| Admin UI / export
+| xref:12-migration-toolkit.adoc[Migration Toolkit] and xref:13-apishift-gateforge.adoc[APIShift] (same core path; APIShift adds AI + Dev Hub registration)
+
 | *Catalog integration*
 | External
-| Native Backstage catalog entities with `kuadrant.io/*` annotations
+| Native Backstage catalog entities (`kuadrant.io/*` annotations); APIShift can register via Scaffolder
+|===
+
+== Choosing a migration path
+
+[cols="1,2,2",options="header"]
+|===
+| Path | Best when | Module
+
+| *Software Template* (Developer Hub)
+| You want GitOps manifests in Gitea + Argo CD Application for your user namespace
+| xref:07-run-migration.adoc[7. Run the Migration]
+
+| *Migration Toolkit*
+| You want a guided wizard against a live 3scale Admin API (no AI)
+| xref:12-migration-toolkit.adoc[12. Migration Toolkit]
+
+| *APIShift*
+| Same migration as the toolkit, plus AI assist and catalog registration
+| xref:13-apishift-gateforge.adoc[13. APIShift]
+
+| *Kuadrant Console*
+| Day-2 after policies exist (products, keys, traffic, Swagger)
+| xref:11-kuadrant-console.adoc[11. Kuadrant Console]
 |===
 
 == Observability comparison
@@ -251,6 +278,6 @@ Key takeaway: Connectivity Link reduces the total number of CRDs from *14 resour
 . *Standards-based*: Gateway API (HTTPRoute) is a portable CNCF standard
 . *GitOps-native*: All configuration lives in Git — ArgoCD syncs and self-heals
 . *Granular policies*: Attach auth and rate limiting at Gateway or individual HTTPRoute level
-. *Integrated DevEx*: Kuadrant Backstage plugin surfaces APIs, plans, and key management in Developer Hub
+. *Integrated DevEx*: Kuadrant Console + Developer Hub surface APIs, plans, and key management
 . *Cloud-native observability*: Native Envoy/Istio metrics + OpenTelemetry + Kiali
 . *Kubernetes-native keys*: API Keys are standard Kubernetes Secrets, manageable with any K8s tooling

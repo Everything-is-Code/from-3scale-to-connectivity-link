@@ -1,0 +1,1153 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Notification Hub API",
+    "version": "1.0.0",
+    "description": "Microservicio de gestión de clientes para NeuralBank",
+    "contact": {
+      "name": "NeuralBank Development Team",
+      "email": "dev@neuralbank.com",
+      "url": "https://neuralbank.com"
+    },
+    "license": {
+      "name": "Proprietary",
+      "url": "https://neuralbank.com/license"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://kuadrant-demo.apps.cluster-65ptc.dyn.redhatworkshops.io/notifications"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Customer Management",
+      "description": "Operaciones CRUD de clientes"
+    },
+    {
+      "name": "Customer Search",
+      "description": "Búsqueda y filtrado de clientes"
+    },
+    {
+      "name": "Credit Scoring",
+      "description": "Gestión de score crediticio"
+    },
+    {
+      "name": "Customer Status",
+      "description": "Activación, desactivación y bloqueo de clientes"
+    },
+    {
+      "name": "Customer Data",
+      "description": "Actualización de datos específicos (email, teléfono, dirección)"
+    },
+    {
+      "name": "Metadata",
+      "description": "Gestión de metadata flexible"
+    },
+    {
+      "name": "Customer Service",
+      "description": "Gestión de clientes"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "CustomerType": {
+        "description": "Tipo de cliente",
+        "enum": [
+          "PERSONAL",
+          "EMPRESARIAL",
+          "CORPORATIVO"
+        ],
+        "type": "string"
+      },
+      "RiskLevel": {
+        "description": "Nivel de riesgo del cliente",
+        "enum": [
+          "Bajo",
+          "Medio",
+          "Alto",
+          "Muy Alto"
+        ],
+        "type": "string"
+      },
+      "IdentificationType": {
+        "description": "Tipo de documento de identificación",
+        "enum": [
+          "DNI",
+          "PASSPORT",
+          "SSN",
+          "RFC",
+          "CURP",
+          "CPF",
+          "CUIT",
+          "RUT",
+          "RUN",
+          "NINO",
+          "CIF",
+          "EIN",
+          "TAX_ID"
+        ],
+        "type": "string"
+      },
+      "CreateCustomerRequest": {
+        "type": "object",
+        "properties": {
+          "identificacion": {
+            "type": "string"
+          },
+          "tipoIdentificacion": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "apellido": {
+            "type": "string"
+          },
+          "fechaNacimiento": {
+            "$ref": "#/components/schemas/LocalDate"
+          },
+          "email": {
+            "type": "string"
+          },
+          "telefono": {
+            "type": "string"
+          },
+          "telefonoAlternativo": {
+            "type": "string"
+          },
+          "direccion": {
+            "type": "string"
+          },
+          "ciudad": {
+            "type": "string"
+          },
+          "estadoProvincia": {
+            "type": "string"
+          },
+          "codigoPostal": {
+            "type": "string"
+          },
+          "paisId": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "tipoCliente": {
+            "$ref": "#/components/schemas/CustomerType"
+          },
+          "scoreCrediticio": {
+            "type": "number"
+          },
+          "nivelRiesgo": {
+            "type": "string"
+          },
+          "sucursalId": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "ejecutivoId": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {}
+          }
+        }
+      },
+      "LocalDate": {
+        "format": "date",
+        "type": "string",
+        "example": "2022-03-10"
+      },
+      "UpdateCustomerRequest": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string"
+          },
+          "apellido": {
+            "type": "string"
+          },
+          "fechaNacimiento": {
+            "$ref": "#/components/schemas/LocalDate"
+          },
+          "email": {
+            "type": "string"
+          },
+          "telefono": {
+            "type": "string"
+          },
+          "telefonoAlternativo": {
+            "type": "string"
+          },
+          "direccion": {
+            "type": "string"
+          },
+          "ciudad": {
+            "type": "string"
+          },
+          "estadoProvincia": {
+            "type": "string"
+          },
+          "codigoPostal": {
+            "type": "string"
+          },
+          "paisId": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "tipoCliente": {
+            "$ref": "#/components/schemas/CustomerType"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {}
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "API key from Kuadrant Console. Also accepts Authorization: Bearer <key>."
+      }
+    },
+    "responses": {
+      "NotFound": {
+        "description": "Recurso no encontrado",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Cliente no encontrado"
+                },
+                "status": {
+                  "type": "integer",
+                  "example": 404
+                },
+                "timestamp": {
+                  "format": "date-time",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "BadRequest": {
+        "description": "Solicitud inválida",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Datos de cliente inválidos"
+                },
+                "status": {
+                  "type": "integer",
+                  "example": 400
+                },
+                "timestamp": {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "Conflict": {
+        "description": "Conflicto - recurso duplicado",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Cliente con identificación XXX ya existe"
+                },
+                "status": {
+                  "type": "integer",
+                  "example": 409
+                },
+                "timestamp": {
+                  "format": "date-time",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "InternalServerError": {
+        "description": "Error interno del servidor",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Error interno del servidor"
+                },
+                "status": {
+                  "type": "integer",
+                  "example": 500
+                },
+                "timestamp": {
+                  "format": "date-time",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "apiKeyAuth": []
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Buscar clientes con filtros",
+        "tags": [
+          "Customer Service"
+        ],
+        "parameters": [
+          {
+            "name": "activo",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "ciudad",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ejecutivoId",
+            "in": "query",
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "name": "nivelRiesgo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "format": "int32",
+              "default": 0,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "paisId",
+            "in": "query",
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "name": "scoreMax",
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "scoreMin",
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "schema": {
+              "format": "int32",
+              "default": 20,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "sucursalId",
+            "in": "query",
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "name": "tipoCliente",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/CustomerType"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de clientes"
+          }
+        }
+      },
+      "post": {
+        "summary": "Crear nuevo cliente",
+        "tags": [
+          "Customer Service"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCustomerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Cliente creado exitosamente"
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "409": {
+            "description": "Cliente duplicado"
+          }
+        }
+      }
+    },
+    "/identification/{identificacion}": {
+      "get": {
+        "summary": "Buscar cliente por identificación",
+        "tags": [
+          "Customer Service"
+        ],
+        "parameters": [
+          {
+            "name": "identificacion",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cliente encontrado"
+          },
+          "404": {
+            "description": "Cliente no encontrado"
+          }
+        }
+      }
+    },
+    "/{customerId}": {
+      "put": {
+        "summary": "Actualizar cliente",
+        "tags": [
+          "Customer Service"
+        ],
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCustomerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Cliente actualizado"
+          },
+          "404": {
+            "description": "Cliente no encontrado"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Actualización parcial de cliente",
+        "tags": [
+          "Customer Service"
+        ],
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {}
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Cliente actualizado"
+          },
+          "404": {
+            "description": "Cliente no encontrado"
+          }
+        }
+      },
+      "get": {
+        "summary": "Obtener cliente por ID",
+        "tags": [
+          "Customer Service"
+        ],
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cliente encontrado"
+          },
+          "404": {
+            "description": "Cliente no encontrado"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Eliminar cliente (soft delete)",
+        "tags": [
+          "Customer Service"
+        ],
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Cliente eliminado"
+          },
+          "404": {
+            "description": "Cliente no encontrado"
+          }
+        }
+      }
+    },
+    "/{customerId}/activate": {
+      "post": {
+        "summary": "Activar cliente",
+        "tags": [
+          "Customer Service"
+        ],
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Cliente activado"
+          },
+          "404": {
+            "description": "Cliente no encontrado"
+          }
+        }
+      }
+    },
+    "/{customerId}/address": {
+      "put": {
+        "summary": "Actualizar dirección",
+        "tags": [
+          "Customer Service"
+        ],
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Dirección actualizada"
+          },
+          "404": {
+            "description": "Cliente no encontrado"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/{customerId}/block": {
+      "post": {
+        "summary": "Bloquear cliente",
+        "tags": [
+          "Customer Service"
+        ],
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Cliente bloqueado"
+          },
+          "404": {
+            "description": "Cliente no encontrado"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/{customerId}/credit-score": {
+      "get": {
+        "summary": "Obtener score crediticio",
+        "tags": [
+          "Customer Service"
+        ],
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Score obtenido"
+          },
+          "404": {
+            "description": "Cliente no encontrado"
+          }
+        }
+      }
+    },
+    "/{customerId}/credit-score/calculate": {
+      "post": {
+        "summary": "Recalcular score crediticio",
+        "tags": [
+          "Customer Service"
+        ],
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Score calculado"
+          },
+          "404": {
+            "description": "Cliente no encontrado"
+          }
+        }
+      }
+    },
+    "/{customerId}/deactivate": {
+      "post": {
+        "summary": "Desactivar cliente",
+        "tags": [
+          "Customer Service"
+        ],
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Cliente desactivado"
+          },
+          "404": {
+            "description": "Cliente no encontrado"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/{customerId}/email": {
+      "put": {
+        "summary": "Actualizar email",
+        "tags": [
+          "Customer Service"
+        ],
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Email actualizado"
+          },
+          "404": {
+            "description": "Cliente no encontrado"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/{customerId}/executive/{executiveId}": {
+      "put": {
+        "summary": "Asignar ejecutivo",
+        "tags": [
+          "Customer Service"
+        ],
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "name": "executiveId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Ejecutivo asignado"
+          },
+          "404": {
+            "description": "Cliente no encontrado"
+          }
+        }
+      }
+    },
+    "/{customerId}/metadata": {
+      "put": {
+        "summary": "Actualizar metadata completa",
+        "tags": [
+          "Customer Service"
+        ],
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {}
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Metadata actualizada"
+          },
+          "404": {
+            "description": "Cliente no encontrado"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      },
+      "get": {
+        "summary": "Obtener metadata del cliente",
+        "tags": [
+          "Customer Service"
+        ],
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Metadata obtenida"
+          },
+          "404": {
+            "description": "Cliente no encontrado"
+          }
+        }
+      }
+    },
+    "/{customerId}/metadata/{key}": {
+      "patch": {
+        "summary": "Actualizar campo específico de metadata",
+        "tags": [
+          "Customer Service"
+        ],
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Campo actualizado"
+          },
+          "404": {
+            "description": "Cliente no encontrado"
+          }
+        }
+      }
+    },
+    "/{customerId}/phone": {
+      "put": {
+        "summary": "Actualizar teléfono",
+        "tags": [
+          "Customer Service"
+        ],
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Teléfono actualizado"
+          },
+          "404": {
+            "description": "Cliente no encontrado"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/{customerId}/risk-level": {
+      "put": {
+        "summary": "Actualizar nivel de riesgo",
+        "tags": [
+          "Customer Service"
+        ],
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Nivel actualizado"
+          },
+          "404": {
+            "description": "Cliente no encontrado"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/{customerId}/summary": {
+      "get": {
+        "summary": "Resumen completo del cliente",
+        "tags": [
+          "Customer Service"
+        ],
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resumen obtenido"
+          },
+          "404": {
+            "description": "Cliente no encontrado"
+          }
+        }
+      }
+    },
+    "/{customerId}/unblock": {
+      "post": {
+        "summary": "Desbloquear cliente",
+        "tags": [
+          "Customer Service"
+        ],
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Cliente desbloqueado"
+          },
+          "404": {
+            "description": "Cliente no encontrado"
+          }
+        }
+      }
+    }
+  }
+}

@@ -285,7 +285,7 @@ spec:
     team: Platform Engineering
     email: platform@redhat.local
   documentation:
-    openAPISpecURL: "https://{{ .name }}-mock.{{ $domain }}/q/openapi"
+    openAPISpecURL: "https://raw.githubusercontent.com/maximilianoPizarro/from-3scale-to-connectivity-link/main/examples/helm/components/kuadrant-console-demo/openapi/{{ .name }}.json"
     swaggerUI: "https://microcks.{{ $domain }}"
   targetRef:
     group: gateway.networking.k8s.io

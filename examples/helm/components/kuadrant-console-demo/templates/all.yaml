@@ -429,50 +429,54 @@ spec:
     patch:
       operation: INSERT_BEFORE
       value:
-        name: envoy.filters.http.cors
-        typed_config:
-          "@type": type.googleapis.com/envoy.extensions.filters.http.cors.v3.Cors
-  - applyTo: ROUTE_CONFIGURATION
-    match:
-      context: GATEWAY
-    patch:
-      operation: MERGE
-      value:
-        virtual_hosts:
-        - name: "kuadrant-demo.apps.{{ .Values.clusterDomain }}"
-          domains:
-          - "kuadrant-demo.apps.{{ .Values.clusterDomain }}"
-          cors:
-            allow_origin_string_match:
-            - safe_regex:
-                regex: ".*"
-            allow_methods: "GET, POST, PUT, DELETE, PATCH, OPTIONS"
-            allow_headers: "Authorization, Content-Type, X-API-Key, Accept, Origin"
-            expose_headers: "Content-Length, Content-Range, X-RateLimit-Limit, X-RateLimit-Remaining"
-            max_age: "86400"
-            allow_credentials: true
-  - applyTo: HTTP_FILTER
-    match:
-      context: GATEWAY
-      listener:
-        filterChain:
-          filter:
-            name: envoy.filters.network.http_connection_manager
-            subFilter:
-              name: envoy.filters.http.router
-    patch:
-      operation: INSERT_BEFORE
-      value:
-        name: envoy.filters.http.lua
+        name: envoy.filters.http.lua.cors_bearer
         typed_config:
           "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
-          inline_code: |
-            function envoy_on_request(handle)
-              local auth = handle:headers():get("authorization")
-              if auth and auth:sub(1, 7):lower() == "bearer " then
-                local key = auth:sub(8)
-                if not handle:headers():get("x-api-key") then
-                  handle:headers():add("x-api-key", key)
+          default_source_code:
+            inline_string: |
+              local ALLOWED_HEADERS = "Authorization, Content-Type, X-API-Key, Accept, Origin, X-Requested-With"
+              local ALLOWED_METHODS = "GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD"
+              local EXPOSE_HEADERS = "Content-Length, Content-Range, X-RateLimit-Limit, X-RateLimit-Remaining"
+
+              function envoy_on_request(handle)
+                local origin = handle:headers():get("origin")
+
+                -- Handle CORS preflight: respond immediately, bypass auth
+                if handle:headers():get(":method") == "OPTIONS" and origin then
+                  handle:respond(
+                    {
+                      [":status"] = "204",
+                      ["access-control-allow-origin"] = origin,
+                      ["access-control-allow-methods"] = ALLOWED_METHODS,
+                      ["access-control-allow-headers"] = ALLOWED_HEADERS,
+                      ["access-control-max-age"] = "86400",
+                      ["access-control-allow-credentials"] = "true",
+                    },
+                    ""
+                  )
+                  return
+                end
+
+                -- Map Authorization: Bearer <key> → X-API-Key: <key>
+                local auth = handle:headers():get("authorization")
+                if auth and auth:sub(1, 7):lower() == "bearer " then
+                  local key = auth:sub(8)
+                  if not handle:headers():get("x-api-key") then
+                    handle:headers():add("x-api-key", key)
+                  end
                 end
               end
-            end
+
+              function envoy_on_response(handle)
+                local origin = handle:headers():get("origin")
+                if not origin then
+                  local req_origin = handle:streamInfo():dynamicMetadata():get("envoy.filters.http.lua.cors_bearer")
+                  if req_origin then
+                    origin = req_origin["origin"]
+                  end
+                end
+                -- Always add CORS headers to non-preflight responses
+                handle:headers():add("access-control-allow-origin", "*")
+                handle:headers():add("access-control-allow-credentials", "true")
+                handle:headers():add("access-control-expose-headers", EXPOSE_HEADERS)
+              end

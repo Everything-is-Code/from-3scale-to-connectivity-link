@@ -500,6 +500,9 @@ connectivityLink:
       destinationNamespace: custom-rhcl-console
       syncWave: "10"
       values:
+        # Chart default is false; enable so the Namespace manifest exists before
+        # namespaced resources (Argo CreateNamespace alone raced ConsolePlugin sync).
+        createNamespace: true
         image:
           repository: quay.io/maximilianopizarro/custom-rhcl-console
           tag: v0.1.1

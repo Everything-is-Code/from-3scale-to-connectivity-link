@@ -462,6 +462,6 @@ spec:
             end
 
             function envoy_on_response(handle)
-              handle:headers():add("access-control-allow-origin", "*")
-              handle:headers():add("access-control-expose-headers", EXPOSE_HEADERS)
+              handle:headers():replace("access-control-allow-origin", "*")
+              handle:headers():replace("access-control-expose-headers", EXPOSE_HEADERS)
             end

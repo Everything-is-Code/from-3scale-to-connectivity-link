@@ -18,6 +18,7 @@ metadata:
   namespace: kuadrant-console-demo
   annotations:
     argocd.argoproj.io/sync-wave: "1"
+    networking.istio.io/service-type: ClusterIP
   labels:
     app.kubernetes.io/part-of: kuadrant-console-demo
 spec:

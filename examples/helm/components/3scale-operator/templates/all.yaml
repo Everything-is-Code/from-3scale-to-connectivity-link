@@ -439,10 +439,24 @@ spec:
                   --from-literal=THREESCALE_ACCESS_TOKEN="${TOKEN}" \
                   --from-literal=AI_API_KEY=""
               fi
-              # ApiShift Helm release uses apishift-config (THREESCALE_ACCESS_TOKEN)
-              if oc get secret apishift-config -n gateforge >/dev/null 2>&1; then
-                echo "Patching apishift-config THREESCALE_ACCESS_TOKEN..."
-                oc patch secret apishift-config -n gateforge \
-                  -p "{\"stringData\":{\"THREESCALE_ACCESS_TOKEN\":\"${TOKEN}\"}}"
-              fi
+              # ApiShift Helm release uses apishift-config (THREESCALE_ACCESS_TOKEN).
+              # The chart may create that secret later with a placeholder — always upsert
+              # the real token, and wait briefly so a late Helm sync still gets patched.
+              for i in $(seq 1 30); do
+                if oc get secret apishift-config -n gateforge >/dev/null 2>&1; then
+                  echo "Patching apishift-config THREESCALE_ACCESS_TOKEN (attempt ${i})..."
+                  oc patch secret apishift-config -n gateforge \
+                    -p "{\"stringData\":{\"THREESCALE_ACCESS_TOKEN\":\"${TOKEN}\"}}"
+                  break
+                fi
+                if [ "$i" -eq 30 ]; then
+                  echo "apishift-config not found yet — creating with admin token only"
+                  oc create secret generic apishift-config -n gateforge \
+                    --from-literal=THREESCALE_ACCESS_TOKEN="${TOKEN}" \
+                    --dry-run=client -o yaml | oc apply -f -
+                else
+                  echo "Waiting for apishift-config (${i}/30)..."
+                  sleep 10
+                fi
+              done
               echo "3scale admin token synced to gateforge namespace"

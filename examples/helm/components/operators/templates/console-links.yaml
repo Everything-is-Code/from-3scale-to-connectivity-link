@@ -139,3 +139,17 @@ spec:
   applicationMenu:
     section: API Management
     imageURL: https://everything-is-code.github.io/apishift/assets/logo.svg
+---
+apiVersion: console.openshift.io/v1
+kind: ConsoleLink
+metadata:
+  name: migration-toolkit-rhcl-link
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+spec:
+  href: https://migration-toolkit.{{ $domain }}
+  location: ApplicationMenu
+  text: Migration Toolkit RHCL
+  applicationMenu:
+    section: API Management
+    imageURL: https://raw.githubusercontent.com/maximilianoPizarro/from-3scale-to-connectivity-link/main/docs/assets/images/kuadrant-logo.svg

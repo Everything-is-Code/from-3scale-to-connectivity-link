@@ -94,6 +94,7 @@ This repository provisions a complete migration workshop environment on OpenShif
 | **OLS (Lightspeed)** | AI assistant with MCP Gateway integration |
 | **LiteMaaS** | LLM proxy for model access |
 | **Migration Toolkit RHCL** | Mushino GUI for 3scale → Connectivity Link (`helmApps.migration-toolkit-rhcl`). Chart: [maximilianoPizarro/migration-toolkit-rhcl](https://github.com/maximilianoPizarro/migration-toolkit-rhcl); upstream: [nmushino/migration-toolkit-rhcl](https://github.com/nmushino/migration-toolkit-rhcl) |
+| **Kuadrant Console** | OpenShift Console plugin for Connectivity Link (`helmApps.custom-rhcl-console`). Docs: [custom-rhcl-console](https://maximilianopizarro.github.io/custom-rhcl-console/) |
 
 ### Software Templates
 

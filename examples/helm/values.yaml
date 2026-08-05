@@ -404,7 +404,9 @@ connectivityLink:
     # (upstream CI publishes everythingascode/apishift-*; frontend there is private).
     - id: apishift
       enabled: true
-      autoSync: false
+      # Keep autoSync on so fresh clusters get GateForge without a manual Argo sync
+      # (previously false left field-content-helm-apishift Missing / empty gateforge).
+      autoSync: true
       repoURL: "https://github.com/Everything-is-Code/apishift"
       path: helm/apishift
       targetRevision: "main"
@@ -463,7 +465,6 @@ connectivityLink:
           scaffolderToken: "placeholder-set-in-argocd"
           componentSuffix: "-product"
     # Mushino migration GUI — chart on maximilianoPizarro fork (evolutivo → nmushino/migration-toolkit-rhcl).
-    # Disabled by default; flip enabled: true when the workshop should deploy it.
     - id: migration-toolkit-rhcl
       enabled: true
       repoURL: "https://github.com/maximilianoPizarro/migration-toolkit-rhcl"
@@ -475,6 +476,7 @@ connectivityLink:
         route:
           enabled: true
           host: "migration-toolkit.{{ .Values.deployer.domain }}"
+          timeout: "5m"
         backend:
           image:
             repository: quay.io/maximilianopizarro/migration-toolkit-rhcl-backend
@@ -487,6 +489,40 @@ connectivityLink:
             pullPolicy: Always
         postgresql:
           enabled: true
+    # Kuadrant / Connectivity Link OpenShift Console plugin
+    # Docs: https://maximilianopizarro.github.io/custom-rhcl-console/
+    # Namespace MUST be custom-rhcl-console (plugin hardcodes ConfigMap lookups there).
+    - id: custom-rhcl-console
+      enabled: true
+      repoURL: "https://github.com/maximilianoPizarro/custom-rhcl-console"
+      path: helm/custom-rhcl-console
+      targetRevision: "main"
+      destinationNamespace: custom-rhcl-console
+      syncWave: "10"
+      values:
+        image:
+          repository: quay.io/maximilianopizarro/custom-rhcl-console
+          tag: v0.1.1
+          pullPolicy: Always
+        consolePlugin:
+          name: custom-rhcl-console
+          displayName: "Connectivity Link"
+          patchConsole: true
+        config:
+          create: true
+          name: custom-rhcl-console-config
+          grafanaNamespace: openshift-cluster-observability-operator
+          grafanaRouteName: grafana-observability-route
+          developerHubUrl: "https://backstage-developer-hub-developer-hub.{{ .Values.deployer.domain }}"
+        dnsProber:
+          enabled: true
+          image:
+            repository: quay.io/maximilianopizarro/custom-rhcl-console
+            tag: dns-prober-v0.1.1
+            pullPolicy: Always
+          route:
+            enabled: true
+            host: "dns-prober-custom-rhcl-console.{{ .Values.deployer.domain }}"
 
 # ============================================================
 # LiteMaaS / MaaS — single LLM source (RHDP injects apiKey; never commit real keys)

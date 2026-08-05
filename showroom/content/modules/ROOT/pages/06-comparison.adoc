@@ -1,5 +1,14 @@
 = Side-by-Side Comparison: 3scale vs Connectivity Link
 
+[.lead]
+*Estimated time*: ~15 minutes
+
+== Learning objectives
+
+* Summarize auth, rate limiting, GitOps, and DX differences in one place
+* Use the resource-count comparison to explain operational simplicity
+* Decide which migration path (template vs toolkit vs APIShift) fits a given API
+
 Now that you have explored both environments, this module consolidates the comparison across all dimensions: authentication, rate limiting, GitOps, developer experience, and observability.
 
 == Resource comparison (3D view)

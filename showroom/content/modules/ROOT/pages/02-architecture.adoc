@@ -1,5 +1,14 @@
 = Architecture Overview
 
+[.lead]
+*Estimated time*: ~15 minutes
+
+== Learning objectives
+
+* Locate 3scale source and Connectivity Link target namespaces on the shared cluster
+* Identify the platform components (Developer Hub, Argo CD, Keycloak, Istio, Kuadrant)
+* Contrast APIcast vs Gateway API + EnvoyFilter request paths
+
 This module presents the side-by-side architecture of the migration environment. Both 3scale and Connectivity Link run on the same OpenShift cluster, enabling direct comparison.
 
 == Cluster layout

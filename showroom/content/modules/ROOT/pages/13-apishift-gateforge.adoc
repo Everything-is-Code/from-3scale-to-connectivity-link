@@ -1,5 +1,14 @@
 = APIShift
 
+[.lead]
+*Estimated time*: ~15 minutes · *Optional*
+
+== Learning objectives
+
+* Run an APIShift migration plan against a 3scale Product
+* Register the migrated component into Developer Hub
+* Explain how AI assist (`litemaas`) differentiates APIShift from Migration Toolkit
+
 *APIShift* is an end-to-end migration console. It performs the *same* 3scale → Connectivity Link migration path as the xref:12-migration-toolkit.adoc[Migration Toolkit], and adds two capabilities on top:
 
 * *AI model assist* (shared workshop `litemaas` endpoint / model)

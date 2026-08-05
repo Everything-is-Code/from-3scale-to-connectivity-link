@@ -2,11 +2,18 @@
 
 *Migration Workshop — Red Hat Developer Hub · Powered by https://kuadrant.io[Kuadrant]*
 
+[.lead]
+*Total duration*: ~3–3.5 hours core path · +~1 hour optional modules (VM, Console, Migration Toolkit, APIShift)
+
 == Welcome
 
 In this workshop you will learn how to migrate API management from *Red Hat 3scale API Management* to *Red Hat Connectivity Link* (Kuadrant), using *Red Hat Developer Hub* as your self-service developer portal.
 
 The cluster has two sets of pre-deployed applications — one secured by 3scale and one secured by Connectivity Link — running side by side so you can compare them directly.
+
+NOTE: URLs that contain `{cluster_domain}` or `apps.cluster.example.com` are *placeholders*. On a *deployed showroom* they are replaced automatically with your cluster ingress domain. On https://maximilianopizarro.github.io/from-3scale-to-connectivity-link/[GitHub Pages] they remain examples and will not resolve — use this site as documentation preview only.
+
+IMPORTANT: Workshop usernames and passwords are *ephemeral lab credentials*. They exist only for this disposable environment. Do not reuse the same password patterns or share production secrets in training materials.
 
 == What you will learn
 
@@ -43,6 +50,10 @@ Your credentials:
 
 * *Username*: `{user_name}`
 * *Password*: `{user_password}`
+
+Cluster sizing and recommended profiles: xref:00-prerequisites.adoc[0. Prerequisites & Sizing].
+
+IMPORTANT: Treat `{user_name}` / `{user_password}` as lab-only accounts. Rotate or discard them after the session.
 
 == Workshop platform links
 
@@ -81,4 +92,17 @@ TIP: Use the *Terminal* tab for `oc` / `curl` in this showroom (it loads the emb
 
 image::workshop-flow.svg[Workshop flow from Developer Hub through Gitea and Argo CD to OpenShift and Kuadrant policies]
 
-Click *Next* to begin with the migration overview.
+Text alternative — workshop flow steps:
+
+. Start in *Developer Hub* (Software Templates / catalog).
+. Scaffold or migrate — manifests land in *Gitea*.
+. *Argo CD* syncs desired state to OpenShift.
+. *Istio Gateway* + *Kuadrant* policies (AuthPolicy / RateLimitPolicy / PlanPolicy) enforce traffic.
+. Verify with curl / Swagger and optional day-2 UIs (Kuadrant Console, Migration Toolkit, APIShift).
+
+== Start here
+
+. Complete xref:00-prerequisites.adoc[0. Prerequisites & Sizing] (~10 min).
+. Continue with xref:01-migration-overview.adoc[1. Migration Overview].
+
+If something breaks later, see xref:14-troubleshooting.adoc[14. Troubleshooting].

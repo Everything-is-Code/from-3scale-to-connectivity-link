@@ -1,5 +1,14 @@
 = Connectivity Link: API Key Authentication (NFL Wallet)
 
+[.lead]
+*Estimated time*: ~20 minutes
+
+== Learning objectives
+
+* Contrast OIDC vs API Key auth models on Connectivity Link
+* Call NFL Wallet with `X-API-Key` against AuthPolicy + RateLimitPolicy
+* Relate labeled Secrets and PlanPolicy tiers to consumer identity
+
 In this module you will explore how *Red Hat Connectivity Link* protects the NFL Wallet API with *AuthPolicy* based on *API Key* — a different model from Neuralbank's OIDC, ideal for machine-to-machine (M2M) integrations.
 
 == OIDC vs API Key

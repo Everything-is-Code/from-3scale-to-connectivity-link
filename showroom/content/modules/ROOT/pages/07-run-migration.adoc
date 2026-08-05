@@ -1,5 +1,14 @@
 = Run the Migration Template
 
+[.lead]
+*Estimated time*: ~25 minutes
+
+== Learning objectives
+
+* Run the *Migrate from 3scale to Connectivity Link* Software Template in Developer Hub
+* Understand the manifests the scaffolder generates (Gateway, HTTPRoute, policies, APIProduct)
+* Confirm Gitea publish + Argo CD Application creation for your user namespace
+
 In this module you will use the *"Migrate from 3scale to Connectivity Link"* Software Template in Developer Hub to migrate one of the pre-deployed 3scale applications.
 
 This page covers both the *user experience* (how to run it) and the *template internals* (what it generates and why).

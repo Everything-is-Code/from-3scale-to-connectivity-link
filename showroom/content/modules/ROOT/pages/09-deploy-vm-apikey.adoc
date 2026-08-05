@@ -1,5 +1,14 @@
 = Deploy a RHEL VM with Connectivity Link (API Key)
 
+[.lead]
+*Estimated time*: ~20 minutes · *Optional*
+
+== Learning objectives
+
+* Scaffold a RHEL VM via Developer Hub onto OpenShift Virtualization
+* Expose the VM through Connectivity Link with API key auth
+* Reuse the same GitOps + AuthPolicy pattern outside the Neuralbank/NFL Wallet demos
+
 In this module you will use the *"RHEL Virtual Machine (bootc / OpenShift Virtualization)"* Software Template in Red Hat Developer Hub to provision a RHEL guest on OpenShift Virtualization and expose it through *Connectivity Link* with *API key* authentication.
 
 This activity complements the migration flow: you practice the scaffolder with a different workload (VM) while using the same policy model (AuthPolicy with API keys, rate limits, GitOps).

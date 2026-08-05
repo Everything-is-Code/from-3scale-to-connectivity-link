@@ -1,14 +1,21 @@
 * xref:index.adoc[Home]
+. Fundamentals
+* xref:00-prerequisites.adoc[0. Prerequisites & Sizing]
 * xref:01-migration-overview.adoc[1. Migration Overview]
 * xref:02-architecture.adoc[2. Architecture]
+. Explore
 * xref:03-explore-3scale.adoc[3. Explore 3scale]
 * xref:04-explore-cl-oidc.adoc[4. Connectivity Link: OIDC]
 * xref:05-explore-cl-apikey.adoc[5. Connectivity Link: API Key]
 * xref:06-comparison.adoc[6. Side-by-Side Comparison]
+. Migrate and verify
 * xref:07-run-migration.adoc[7. Run the Migration]
 * xref:08-verify-test.adoc[8. Verify and Test]
+. Extended / optional
 * xref:09-deploy-vm-apikey.adoc[9. Deploy VM (API Key)]
-* xref:10-summary.adoc[10. Summary]
 * xref:11-kuadrant-console.adoc[11. Kuadrant Console]
 * xref:12-migration-toolkit.adoc[12. Migration Toolkit]
 * xref:13-apishift-gateforge.adoc[13. APIShift]
+. Wrap-up
+* xref:10-summary.adoc[10. Summary]
+* xref:14-troubleshooting.adoc[14. Troubleshooting]

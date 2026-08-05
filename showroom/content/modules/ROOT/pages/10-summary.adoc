@@ -1,9 +1,19 @@
 = Summary and Next Steps
 
+[.lead]
+*Estimated time*: ~10 minutes
+
+== Learning objectives
+
+* Recap the 3scale → Connectivity Link mapping patterns
+* Recall the decommission checklist before removing 3scale
+* Know where to go for docs, day-2 UIs, and troubleshooting
+
 Congratulations! You have completed the migration workshop. This module recaps what you learned, shows the conversion patterns, and provides links to official documentation.
 
 == What you accomplished
 
+. Reviewed xref:00-prerequisites.adoc[prerequisites and environment sizing]
 . Explored the *3scale environment* — Products, Backends, Application Plans, APIcast
 . Explored the *Connectivity Link environment* — Gateway, HTTPRoute, OIDCPolicy, AuthPolicy, RateLimitPolicy, PlanPolicy, APIProduct
 . Compared both approaches *side by side* across authentication, rate limiting, GitOps, and developer experience
@@ -11,6 +21,7 @@ Congratulations! You have completed the migration workshop. This module recaps w
 . Explored the three migration UIs: xref:11-kuadrant-console.adoc[Kuadrant Console], xref:12-migration-toolkit.adoc[Migration Toolkit], and xref:13-apishift-gateforge.adoc[APIShift]
 . *(Optional activity)* provisioned a *RHEL VM* with *Connectivity Link* and *API key* auth using the *RHEL Virtual Machine* scaffolder template
 . Verified the migrated application works identically to the 3scale original
+. Used xref:14-troubleshooting.adoc[Troubleshooting] when needed
 
 == Mapping Rules to HTTPRoute conversion
 
@@ -143,6 +154,10 @@ WARNING: Do not delete the source namespace until you have fully validated the C
 The source code, Helm charts, Software Templates, and this workshop documentation are available at:
 
 https://github.com/maximilianoPizarro/from-3scale-to-connectivity-link
+
+== Need help?
+
+See xref:14-troubleshooting.adoc[14. Troubleshooting] for common OIDC iframe, Argo CD sync, auth, and showroom refresh issues.
 
 == Thank you
 

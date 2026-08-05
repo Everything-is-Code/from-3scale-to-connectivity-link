@@ -1,0 +1,117 @@
+= Prerequisites and Environment Sizing
+
+[.lead]
+*Estimated time*: ~10 minutes
+
+== Learning objectives
+
+* Confirm the prior knowledge this workshop expects
+* Understand which platform components the lab already provisions
+* Choose a cluster sizing profile that matches your audience (`userCount`)
+* Know how URLs and credentials differ between GitHub Pages preview and a live showroom
+
+== Prior knowledge
+
+You should be comfortable with:
+
+* *Kubernetes / OpenShift* basics — namespaces, Deployments, Services, Routes
+* *YAML* and declarative configuration
+* *GitOps* concepts (desired state in Git, continuous sync with Argo CD)
+* *Gateway API* awareness (Gateway, HTTPRoute) — deep expertise not required
+* *Authentication models* — difference between OIDC / JWT and API keys
+
+TIP: If you need a refresher on the 3scale side, open https://docs.redhat.com/en/documentation/red_hat_3scale_api_management/[Red Hat 3scale documentation] in another tab. For Connectivity Link, use https://docs.redhat.com/en/documentation/red_hat_connectivity_link/[Connectivity Link docs].
+
+== What the lab already provides
+
+When you join a deployed workshop instance, the cluster already includes:
+
+* *3scale* (source) and *Connectivity Link / Kuadrant* (target) side by side
+* *Red Hat Developer Hub*, *Keycloak (RHBK)*, *Gitea*, *Argo CD*
+* *Istio* (Service Mesh / Gateway API data plane)
+* Observability (Grafana, Thanos, Tempo) and day-2 UIs (Kuadrant Console, Migration Toolkit, APIShift)
+
+You do *not* install these operators during the lab — you explore and migrate against them.
+
+== How to open the lab
+
+. Register (or receive) workshop credentials from the registration portal.
+. Open the *Showroom* URL for your cluster (pattern: `https://showroom-showroom.{cluster_domain}`).
+. Use the *Terminal* tab for `oc` / `curl`, and open *Developer Hub* in a new browser tab if the embedded panel fails OIDC login.
+
+NOTE: The public https://maximilianopizarro.github.io/from-3scale-to-connectivity-link/[GitHub Pages] site is a *documentation preview*. Placeholders such as `apps.cluster.example.com` and `{cluster_domain}` are *not* live hosts. On a deployed showroom, those values are rewritten automatically to your cluster domain.
+
+== Environment sizing
+
+Operators and instructors should size the OpenShift cluster *before* inviting users. Scaling is driven by a single Helm value: `userCount` in `examples/helm/values.yaml`.
+
+=== Quickstart cluster profiles
+
+[cols="2,1,2,1,2",options="header"]
+|===
+| Profile | Users (`userCount`) | Control plane | Workers | Worker size (each)
+
+| *Minimum viable*
+| ~30
+| 3 masters
+| 3
+| 16 vCPU / 64 Gi
+
+| *Standard demo*
+| ~100
+| 3 masters
+| 6
+| 16–32 vCPU / 64–128 Gi
+
+| *Full workshop*
+| 200
+| 3 masters (16 vCPU / 64 Gi recommended)
+| 8–12
+| 32 vCPU / 128 Gi
+|===
+
+IMPORTANT: Single-node (SNO) or undersized clusters are *not* supported for a full multi-user workshop. Plan capacity for concurrent DevSpaces workspaces if attendees will scaffold apps.
+
+=== Operator / stack footprint (approximate)
+
+Steady-state memory already consumed by platform stacks (independent of `userCount`):
+
+[cols="2,1,3",options="header"]
+|===
+| Stack | Approx RAM | Example namespaces
+
+| Service Mesh (Istio ambient)
+| ~4 Gi
+| `istio-system`, `ztunnel`
+
+| Connectivity Link / Kuadrant
+| ~2 Gi
+| `kuadrant-system`
+
+| Observability (Grafana / Tempo / Thanos)
+| ~3 Gi
+| `openshift-cluster-observability-operator`, `openshift-tempo`
+
+| Developer Hub
+| ~2 Gi
+| `developer-hub`
+
+| 3scale
+| ~4 Gi
+| `3scale-system`
+
+| Migration UIs (APIShift + Toolkit + Console plugin)
+| ~1.5 Gi
+| `gateforge`, `migration-toolkit`, `custom-rhcl-console`
+
+| Identity / SCM
+| ~3 Gi
+| `rhbk-operator`, `gitea`
+|===
+
+For RHDP KubeVirt quota details and per-user DevSpaces footprints, see the repository README section *Cluster Sizing*:
+https://github.com/maximilianoPizarro/from-3scale-to-connectivity-link#cluster-sizing
+
+== Next
+
+Continue with xref:01-migration-overview.adoc[Migration Overview] to learn why organizations move from 3scale to Connectivity Link.

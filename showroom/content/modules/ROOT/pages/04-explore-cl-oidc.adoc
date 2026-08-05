@@ -1,5 +1,14 @@
 = Connectivity Link: OIDC Authentication (Neuralbank)
 
+[.lead]
+*Estimated time*: ~20 minutes
+
+== Learning objectives
+
+* Trace Neuralbank traffic through Gateway, HTTPRoute, OIDCPolicy, and RateLimitPolicy
+* Obtain a Keycloak token and call the API successfully
+* Contrast this OIDC path with the 3scale Product configuration from module 3
+
 In this module you will explore how *Red Hat Connectivity Link* protects the Neuralbank API with *OIDCPolicy* integrated with Keycloak, plus *RateLimitPolicy* for traffic control.
 
 == Context

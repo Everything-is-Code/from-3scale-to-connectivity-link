@@ -1,5 +1,14 @@
 = Verify and Test the Migration
 
+[.lead]
+*Estimated time*: ~20 minutes
+
+== Learning objectives
+
+* Confirm Gateway / policies are Ready in the migrated namespace
+* Test OIDC and API Key paths with curl against both 3scale and CL endpoints
+* Validate that behavior matches the source application
+
 After running the migration template, both the 3scale and Connectivity Link versions of the application are running side by side. In this module you will verify the migrated resources and test both environments.
 
 == Step 1: Verify the Gateway is programmed

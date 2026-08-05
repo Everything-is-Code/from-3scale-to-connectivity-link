@@ -1,0 +1,69 @@
+= Troubleshooting and FAQ
+
+[.lead]
+*Estimated time*: ~10 minutes
+
+== Learning objectives
+
+* Resolve the most common workshop blockers (OIDC iframe, Argo CD sync, auth failures)
+* Distinguish GitHub Pages placeholders from a live showroom
+* Know where to fetch non-OAuth console credentials
+
+== Developer Hub blank or broken in the showroom iframe
+
+*Symptom*: The Developer Hub tab shows a blank page or fails after login.
+
+*Cause*: Keycloak / OIDC often blocks login inside an iframe.
+
+*Fix*: Open Developer Hub in a *new browser tab* using the URL from the home page *Workshop platform links* table.
+
+== Argo CD Application OutOfSync or Failed
+
+* Check the Application events and the failing resource in Argo CD.
+* Common causes: missing CRDs (operator still installing), Secret placeholders, sync wave ordering.
+* Retry *Sync* after operators report Ready; for helmApps with placeholders (APIShift tokens), patch real tokens into the Application `valuesObject` — never commit secrets to Git.
+
+== Auth returns 401 / 403 after migration
+
+* *OIDC*: Confirm `issuerUrl` matches the Keycloak realm (`neuralbank` vs `backstage`). Obtain a fresh token with the workshop user.
+* *API key*: Confirm the Secret has labels expected by AuthPolicy (for example `kuadrant.io/apikey=true` and plan annotations) and that you send `X-API-Key` (or Bearer mapped by the demo EnvoyFilter).
+
+== Rate limit returns 429 Too Many Requests
+
+Limitador is enforcing PlanPolicy / RateLimitPolicy. For demos:
+
+* Use a higher plan tier (for example `pro`), or
+* Wait for the window to reset, or
+* Restart Limitador to flush counters: `oc rollout restart deployment/limitador-limitador -n kuadrant-system`
+
+== URLs still show `apps.cluster.example.com`
+
+You are likely on *GitHub Pages* (documentation preview). Deployed showrooms rewrite `{cluster_domain}` from the hostname. Use your workshop showroom URL, or pass `?CLUSTER_DOMAIN=apps.<your-domain>`.
+
+== Showroom content looks outdated on the cluster
+
+The in-cluster showroom clones Git and rebuilds Antora at *pod start*. After content merges to `main`:
+
+----
+oc rollout restart deployment/showroom -n showroom
+----
+
+== Non-OAuth console passwords
+
+For Argo CD, Grafana, Gitea, Keycloak, 3scale, APIShift, Migration Toolkit, and related URLs:
+
+----
+./scripts/get-credentials.sh
+----
+
+Requires `oc` logged in with permission to read Routes and Secrets.
+
+== Still stuck?
+
+. Re-read xref:00-prerequisites.adoc[Prerequisites and Environment Sizing]
+. Check xref:08-verify-test.adoc[Verify and Test] for expected `oc` outputs
+. Ask your instructor / platform engineer with the Application name and HTTP status codes you observed
+
+== Next
+
+Return to xref:10-summary.adoc[Summary] or revisit optional modules (Kuadrant Console, Migration Toolkit, APIShift).

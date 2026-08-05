@@ -11,7 +11,7 @@ In this workshop you will learn how to migrate API management from *Red Hat 3sca
 
 The cluster has two sets of pre-deployed applications — one secured by 3scale and one secured by Connectivity Link — running side by side so you can compare them directly.
 
-NOTE: URLs that contain `{cluster_domain}` or `apps.cluster.example.com` are *placeholders*. On a *deployed showroom* they are replaced automatically with your cluster ingress domain. On https://maximilianopizarro.github.io/from-3scale-to-connectivity-link/[GitHub Pages] they remain examples and will not resolve — use this site as documentation preview only.
+NOTE: URLs that contain `\{cluster_domain}` or `apps.cluster.example.com` are *placeholders*. On a *deployed showroom* they are replaced automatically with your cluster ingress domain. On https://maximilianopizarro.github.io/from-3scale-to-connectivity-link/[GitHub Pages] they remain examples and will not resolve — use this site as documentation preview only.
 
 IMPORTANT: Workshop usernames and passwords are *ephemeral lab credentials*. They exist only for this disposable environment. Do not reuse the same password patterns or share production secrets in training materials.
 

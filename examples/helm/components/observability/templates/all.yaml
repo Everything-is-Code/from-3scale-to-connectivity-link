@@ -1,3 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-monitoring-config
+  namespace: openshift-monitoring
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+data:
+  config.yaml: |
+    enableUserWorkload: true
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -1436,26 +1447,33 @@ data:
       # LiteMaaS via gateway (200, L7 waypoint metrics)
       curl -sk -o /dev/null -w "${TS} %{http_code} lm-gw/\n" --connect-timeout 2 --max-time 4 \
         -H "Host: $LM_HOST" "http://litemaas-gateway-istio.litemaas.svc:8080/" &
-      # Kuadrant Console demo APIs via gateway (API key auth, rate limiting)
-      curl -sk -o /dev/null -w "${TS} %{http_code} demo/inventory\n" --connect-timeout 2 --max-time 4 \
-        -H "Host: $DEMO_HOST" -H "X-API-Key: demo-inventory-service-key" \
+      # Kuadrant Console demo: pro keys (300/min, 10000/day) for sustained traffic
+      curl -sk -o /dev/null -w "${TS} %{http_code} demo/inventory-pro\n" --connect-timeout 2 --max-time 4 \
+        -H "Host: $DEMO_HOST" -H "X-API-Key: demo-inventory-service-pro-key" \
         "http://demo-gateway-istio.kuadrant-console-demo.svc:80/inventory" &
-      curl -sk -o /dev/null -w "${TS} %{http_code} demo/payments\n" --connect-timeout 2 --max-time 4 \
-        -H "Host: $DEMO_HOST" -H "X-API-Key: demo-payment-gateway-key" \
+      curl -sk -o /dev/null -w "${TS} %{http_code} demo/payments-pro\n" --connect-timeout 2 --max-time 4 \
+        -H "Host: $DEMO_HOST" -H "X-API-Key: demo-payment-gateway-pro-key" \
         "http://demo-gateway-istio.kuadrant-console-demo.svc:80/payments" &
-      curl -sk -o /dev/null -w "${TS} %{http_code} demo/orders\n" --connect-timeout 2 --max-time 4 \
-        -H "Host: $DEMO_HOST" -H "X-API-Key: demo-order-management-key" \
+      curl -sk -o /dev/null -w "${TS} %{http_code} demo/orders-pro\n" --connect-timeout 2 --max-time 4 \
+        -H "Host: $DEMO_HOST" -H "X-API-Key: demo-order-management-pro-key" \
         "http://demo-gateway-istio.kuadrant-console-demo.svc:80/orders" &
-      curl -sk -o /dev/null -w "${TS} %{http_code} demo/loyalty\n" --connect-timeout 2 --max-time 4 \
-        -H "Host: $DEMO_HOST" -H "X-API-Key: demo-customer-loyalty-key" \
+      curl -sk -o /dev/null -w "${TS} %{http_code} demo/loyalty-pro\n" --connect-timeout 2 --max-time 4 \
+        -H "Host: $DEMO_HOST" -H "X-API-Key: demo-customer-loyalty-pro-key" \
         "http://demo-gateway-istio.kuadrant-console-demo.svc:80/loyalty" &
-      curl -sk -o /dev/null -w "${TS} %{http_code} demo/shipping\n" --connect-timeout 2 --max-time 4 \
-        -H "Host: $DEMO_HOST" -H "X-API-Key: demo-shipping-tracker-key" \
+      curl -sk -o /dev/null -w "${TS} %{http_code} demo/shipping-pro\n" --connect-timeout 2 --max-time 4 \
+        -H "Host: $DEMO_HOST" -H "X-API-Key: demo-shipping-tracker-pro-key" \
         "http://demo-gateway-istio.kuadrant-console-demo.svc:80/shipping" &
-      curl -sk -o /dev/null -w "${TS} %{http_code} demo/notifications\n" --connect-timeout 2 --max-time 4 \
-        -H "Host: $DEMO_HOST" -H "X-API-Key: demo-notification-hub-key" \
+      curl -sk -o /dev/null -w "${TS} %{http_code} demo/notifications-pro\n" --connect-timeout 2 --max-time 4 \
+        -H "Host: $DEMO_HOST" -H "X-API-Key: demo-notification-hub-pro-key" \
         "http://demo-gateway-istio.kuadrant-console-demo.svc:80/notifications" &
-      # Kuadrant demo: unauthenticated hit to trigger 401 (auth metrics)
+      # Free-tier keys (10/min, 100/day) for consumer variety
+      curl -sk -o /dev/null -w "${TS} %{http_code} demo/inventory-free\n" --connect-timeout 2 --max-time 4 \
+        -H "Host: $DEMO_HOST" -H "X-API-Key: demo-inventory-service-free-key" \
+        "http://demo-gateway-istio.kuadrant-console-demo.svc:80/inventory" &
+      curl -sk -o /dev/null -w "${TS} %{http_code} demo/payments-free\n" --connect-timeout 2 --max-time 4 \
+        -H "Host: $DEMO_HOST" -H "X-API-Key: demo-payment-gateway-free-key" \
+        "http://demo-gateway-istio.kuadrant-console-demo.svc:80/payments" &
+      # Unauthenticated hit to trigger 401 (auth metrics)
       curl -sk -o /dev/null -w "${TS} %{http_code} demo/inventory-nokey\n" --connect-timeout 2 --max-time 4 \
         -H "Host: $DEMO_HOST" "http://demo-gateway-istio.kuadrant-console-demo.svc:80/inventory" &
       # user1-neuralbank-backend via gateway (API Key auth)
@@ -1513,3 +1531,449 @@ spec:
           name: mesh-traffic-generator
           defaultMode: 0755
       terminationGracePeriodSeconds: 5
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+  name: rhcl-api-overview
+  namespace: openshift-cluster-observability-operator
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana-observability
+  json: |
+    {
+      "annotations": { "list": [] },
+      "title": "RHCL Traffic Overview",
+      "uid": "rhcl-api-overview",
+      "version": 1,
+      "panels": [
+        {
+          "title": "Total Request Rate",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+          "targets": [{ "expr": "sum(rate(istio_requests_total{reporter=\"source\", namespace=~\"$namespace\"}[5m]))", "legendFormat": "req/s" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": { "defaults": { "unit": "reqps" } }
+        },
+        {
+          "title": "Success Rate",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+          "targets": [{ "expr": "sum(rate(istio_requests_total{reporter=\"source\", namespace=~\"$namespace\", response_code=~\"2..\"}[5m])) / sum(rate(istio_requests_total{reporter=\"source\", namespace=~\"$namespace\"}[5m])) * 100", "legendFormat": "%" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": { "defaults": { "unit": "percent", "thresholds": { "steps": [{"color":"red","value":null},{"color":"orange","value":90},{"color":"green","value":99}] } } }
+        },
+        {
+          "title": "P50 / P95 / P99 Latency",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+          "targets": [
+            { "expr": "histogram_quantile(0.50, sum(rate(istio_request_duration_milliseconds_bucket{reporter=\"source\", namespace=~\"$namespace\"}[5m])) by (le))", "legendFormat": "P50" },
+            { "expr": "histogram_quantile(0.95, sum(rate(istio_request_duration_milliseconds_bucket{reporter=\"source\", namespace=~\"$namespace\"}[5m])) by (le))", "legendFormat": "P95" },
+            { "expr": "histogram_quantile(0.99, sum(rate(istio_request_duration_milliseconds_bucket{reporter=\"source\", namespace=~\"$namespace\"}[5m])) by (le))", "legendFormat": "P99" }
+          ],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": { "defaults": { "unit": "ms" } }
+        },
+        {
+          "title": "Rate-Limited (429)",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+          "targets": [{ "expr": "sum(rate(istio_requests_total{reporter=\"source\", namespace=~\"$namespace\", response_code=\"429\"}[5m]))", "legendFormat": "429/s" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": { "defaults": { "unit": "reqps", "thresholds": { "steps": [{"color":"green","value":null},{"color":"orange","value":0.1},{"color":"red","value":1}] } } }
+        },
+        {
+          "title": "Request Rate by Gateway",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+          "targets": [{ "expr": "sum(rate(istio_requests_total{reporter=\"source\", namespace=~\"$namespace\", source_workload=~\"$gateway\"}[5m])) by (source_workload)", "legendFormat": "{{`{{source_workload}}`}}" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" }
+        },
+        {
+          "title": "Request Rate by HTTPRoute",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+          "targets": [{ "expr": "sum(rate(istio_requests_total{reporter=\"source\", namespace=~\"$namespace\", destination_workload=~\"$httproute\"}[5m])) by (destination_workload)", "legendFormat": "{{`{{destination_workload}}`}}" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" }
+        },
+        {
+          "title": "Response Code Distribution",
+          "type": "piechart",
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 12 },
+          "targets": [{ "expr": "sum(increase(istio_requests_total{reporter=\"source\", namespace=~\"$namespace\"}[1h])) by (response_code)", "legendFormat": "{{`{{response_code}}`}}" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" }
+        },
+        {
+          "title": "Latency Heatmap (P95 by Route)",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 16, "x": 8, "y": 12 },
+          "targets": [{ "expr": "histogram_quantile(0.95, sum(rate(istio_request_duration_milliseconds_bucket{reporter=\"source\", namespace=~\"$namespace\"}[5m])) by (le, destination_workload))", "legendFormat": "{{`{{destination_workload}}`}} P95" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": { "defaults": { "unit": "ms" } }
+        },
+        {
+          "title": "Request/Response Size",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 20 },
+          "targets": [
+            { "expr": "sum(rate(istio_request_bytes_sum{reporter=\"source\", namespace=~\"$namespace\"}[5m])) by (destination_workload)", "legendFormat": "req {{`{{destination_workload}}`}}" },
+            { "expr": "sum(rate(istio_response_bytes_sum{reporter=\"source\", namespace=~\"$namespace\"}[5m])) by (destination_workload)", "legendFormat": "resp {{`{{destination_workload}}`}}" }
+          ],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": { "defaults": { "unit": "Bps" } }
+        },
+        {
+          "title": "Active TCP Connections",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 20 },
+          "targets": [{ "expr": "sum(istio_tcp_connections_opened_total{reporter=\"source\", namespace=~\"$namespace\"}) by (source_workload) - sum(istio_tcp_connections_closed_total{reporter=\"source\", namespace=~\"$namespace\"}) by (source_workload)", "legendFormat": "{{`{{source_workload}}`}}" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" }
+        }
+      ],
+      "templating": {
+        "list": [
+          { "name": "DS_PROMETHEUS", "type": "datasource", "query": "prometheus", "current": { "text": "Prometheus (RHOBS)", "value": "Prometheus (RHOBS)" } },
+          { "name": "namespace", "type": "query", "query": "label_values(istio_requests_total, namespace)", "multi": true, "includeAll": true, "current": { "text": "All", "value": "$__all" } },
+          { "name": "gateway", "type": "query", "query": "label_values(istio_requests_total{namespace=~\"$namespace\"}, source_workload)", "multi": true, "includeAll": true, "current": { "text": "All", "value": "$__all" } },
+          { "name": "httproute", "type": "query", "query": "label_values(istio_requests_total{namespace=~\"$namespace\"}, destination_workload)", "multi": true, "includeAll": true, "current": { "text": "All", "value": "$__all" } }
+        ]
+      },
+      "time": { "from": "now-1h", "to": "now" },
+      "schemaVersion": 39
+    }
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+  name: rhcl-api-consumers
+  namespace: openshift-cluster-observability-operator
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana-observability
+  json: |
+    {
+      "annotations": { "list": [] },
+      "title": "RHCL Consumer Dashboard",
+      "uid": "rhcl-api-consumers",
+      "version": 1,
+      "panels": [
+        {
+          "title": "Active Consumers",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+          "targets": [{ "expr": "count(count by (request_headers_x_consumer_id) (istio_requests_total{reporter=\"source\", namespace=~\"$namespace\", request_headers_x_consumer_id!=\"\"}))", "legendFormat": "consumers" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" }
+        },
+        {
+          "title": "Total Requests (all consumers)",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+          "targets": [{ "expr": "sum(rate(istio_requests_total{reporter=\"source\", namespace=~\"$namespace\", request_headers_x_consumer_id!=\"\"}[5m]))", "legendFormat": "req/s" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": { "defaults": { "unit": "reqps" } }
+        },
+        {
+          "title": "Top Consumer by Rate",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+          "targets": [{ "expr": "topk(1, sum by (request_headers_x_consumer_id) (rate(istio_requests_total{reporter=\"source\", namespace=~\"$namespace\", request_headers_x_consumer_id!=\"\"}[5m])))", "legendFormat": "{{`{{request_headers_x_consumer_id}}`}}" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": { "defaults": { "unit": "reqps" } }
+        },
+        {
+          "title": "Rate-Limited Consumers",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+          "targets": [{ "expr": "count(count by (request_headers_x_consumer_id) (istio_requests_total{reporter=\"source\", namespace=~\"$namespace\", response_code=\"429\", request_headers_x_consumer_id!=\"\"}))", "legendFormat": "throttled" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" }
+        },
+        {
+          "title": "Request Rate per Consumer",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+          "targets": [{ "expr": "sum(rate(istio_requests_total{reporter=\"source\", namespace=~\"$namespace\", request_headers_x_consumer_id=~\"$consumer\"}[5m])) by (request_headers_x_consumer_id)", "legendFormat": "{{`{{request_headers_x_consumer_id}}`}}" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" }
+        },
+        {
+          "title": "Error Rate per Consumer",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+          "targets": [{ "expr": "sum(rate(istio_requests_total{reporter=\"source\", namespace=~\"$namespace\", request_headers_x_consumer_id=~\"$consumer\", response_code=~\"[45]..\"}[5m])) by (request_headers_x_consumer_id)", "legendFormat": "{{`{{request_headers_x_consumer_id}}`}}" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" }
+        },
+        {
+          "title": "P95 Latency per Consumer",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
+          "targets": [{ "expr": "histogram_quantile(0.95, sum(rate(istio_request_duration_milliseconds_bucket{reporter=\"source\", namespace=~\"$namespace\", request_headers_x_consumer_id=~\"$consumer\"}[5m])) by (le, request_headers_x_consumer_id))", "legendFormat": "{{`{{request_headers_x_consumer_id}}`}}" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": { "defaults": { "unit": "ms" } }
+        },
+        {
+          "title": "Consumer Traffic Share",
+          "type": "piechart",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+          "targets": [{ "expr": "sum(increase(istio_requests_total{reporter=\"source\", namespace=~\"$namespace\", request_headers_x_consumer_id!=\"\"}[1h])) by (request_headers_x_consumer_id)", "legendFormat": "{{`{{request_headers_x_consumer_id}}`}}" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" }
+        },
+        {
+          "title": "429 Rate-Limit Hits per Consumer",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 20 },
+          "targets": [{ "expr": "sum(rate(istio_requests_total{reporter=\"source\", namespace=~\"$namespace\", response_code=\"429\", request_headers_x_consumer_id=~\"$consumer\"}[5m])) by (request_headers_x_consumer_id)", "legendFormat": "{{`{{request_headers_x_consumer_id}}`}}" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" }
+        }
+      ],
+      "templating": {
+        "list": [
+          { "name": "DS_PROMETHEUS", "type": "datasource", "query": "prometheus", "current": { "text": "Prometheus (RHOBS)", "value": "Prometheus (RHOBS)" } },
+          { "name": "namespace", "type": "query", "query": "label_values(istio_requests_total, namespace)", "multi": true, "includeAll": true, "current": { "text": "All", "value": "$__all" } },
+          { "name": "consumer", "type": "query", "query": "label_values(istio_requests_total{namespace=~\"$namespace\", request_headers_x_consumer_id!=\"\"}, request_headers_x_consumer_id)", "multi": true, "includeAll": true, "current": { "text": "All", "value": "$__all" } }
+        ]
+      },
+      "time": { "from": "now-1h", "to": "now" },
+      "schemaVersion": 39
+    }
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+  name: rhcl-api-costs
+  namespace: openshift-cluster-observability-operator
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana-observability
+  json: |
+    {
+      "annotations": { "list": [] },
+      "title": "RHCL Cost & AI Dashboard",
+      "uid": "rhcl-api-costs",
+      "version": 1,
+      "panels": [
+        {
+          "title": "Total Request Volume (24h)",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+          "targets": [{ "expr": "sum(increase(istio_requests_total{reporter=\"source\", namespace=~\"$namespace\"}[24h]))", "legendFormat": "requests" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" }
+        },
+        {
+          "title": "Successful Requests (24h)",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+          "targets": [{ "expr": "sum(increase(istio_requests_total{reporter=\"source\", namespace=~\"$namespace\", response_code=~\"2..\"}[24h]))", "legendFormat": "2xx" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": { "defaults": { "thresholds": { "steps": [{"color":"green","value":null}] } } }
+        },
+        {
+          "title": "Rate-Limited Requests (24h)",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+          "targets": [{ "expr": "sum(increase(istio_requests_total{reporter=\"source\", namespace=~\"$namespace\", response_code=\"429\"}[24h]))", "legendFormat": "429" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": { "defaults": { "thresholds": { "steps": [{"color":"green","value":null},{"color":"orange","value":100},{"color":"red","value":1000}] } } }
+        },
+        {
+          "title": "Data Transferred (24h)",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+          "targets": [{ "expr": "sum(increase(istio_response_bytes_sum{reporter=\"source\", namespace=~\"$namespace\"}[24h]))", "legendFormat": "bytes" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": { "defaults": { "unit": "bytes" } }
+        },
+        {
+          "title": "Cost Trend — Requests per Consumer (hourly)",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 4 },
+          "targets": [{ "expr": "sum(increase(istio_requests_total{reporter=\"source\", namespace=~\"$namespace\", request_headers_x_consumer_id!=\"\"}[1h])) by (request_headers_x_consumer_id)", "legendFormat": "{{`{{request_headers_x_consumer_id}}`}}" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "options": { "tooltip": { "mode": "multi" } }
+        },
+        {
+          "title": "Bandwidth Cost Proxy — Bytes per Consumer (hourly)",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
+          "targets": [{ "expr": "sum(increase(istio_response_bytes_sum{reporter=\"source\", namespace=~\"$namespace\", request_headers_x_consumer_id!=\"\"}[1h])) by (request_headers_x_consumer_id)", "legendFormat": "{{`{{request_headers_x_consumer_id}}`}}" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": { "defaults": { "unit": "bytes" } }
+        },
+        {
+          "title": "Cost Allocation by Route",
+          "type": "piechart",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+          "targets": [{ "expr": "sum(increase(istio_requests_total{reporter=\"source\", namespace=~\"$namespace\"}[24h])) by (destination_workload)", "legendFormat": "{{`{{destination_workload}}`}}" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" }
+        },
+        {
+          "title": "Cumulative Request Volume",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 20 },
+          "targets": [{ "expr": "sum(increase(istio_requests_total{reporter=\"source\", namespace=~\"$namespace\"}[1h]))", "legendFormat": "requests/h" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "options": { "tooltip": { "mode": "single" } }
+        },
+        {
+          "title": "Error Cost — 4xx/5xx per Route",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 20 },
+          "targets": [{ "expr": "sum(rate(istio_requests_total{reporter=\"source\", namespace=~\"$namespace\", response_code=~\"[45]..\"}[5m])) by (destination_workload, response_code)", "legendFormat": "{{`{{destination_workload}}`}} {{`{{response_code}}`}}" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" }
+        }
+      ],
+      "templating": {
+        "list": [
+          { "name": "DS_PROMETHEUS", "type": "datasource", "query": "prometheus", "current": { "text": "Prometheus (RHOBS)", "value": "Prometheus (RHOBS)" } },
+          { "name": "namespace", "type": "query", "query": "label_values(istio_requests_total, namespace)", "multi": true, "includeAll": true, "current": { "text": "All", "value": "$__all" } },
+          { "name": "consumer", "type": "query", "query": "label_values(istio_requests_total{namespace=~\"$namespace\", request_headers_x_consumer_id!=\"\"}, request_headers_x_consumer_id)", "multi": true, "includeAll": true, "current": { "text": "All", "value": "$__all" } }
+        ]
+      },
+      "time": { "from": "now-24h", "to": "now" },
+      "schemaVersion": 39
+    }
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+  name: rhcl-authorino
+  namespace: openshift-cluster-observability-operator
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana-observability
+  json: |
+    {
+      "annotations": { "list": [] },
+      "title": "RHCL Authorino (Auth) Metrics",
+      "uid": "rhcl-authorino",
+      "version": 1,
+      "panels": [
+        {
+          "title": "Auth Evaluations Rate",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+          "targets": [{ "expr": "sum(rate(auth_server_evaluator_total{namespace=~\"$namespace\"}[5m])) by (namespace)", "legendFormat": "{{`{{namespace}}`}}" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" }
+        },
+        {
+          "title": "Auth Denied Rate",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+          "targets": [{ "expr": "sum(rate(auth_server_authconfig_total{authconfig_status=\"PERMISSION_DENIED\", namespace=~\"$namespace\"}[5m])) by (namespace)", "legendFormat": "denied {{`{{namespace}}`}}" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" }
+        },
+        {
+          "title": "Auth Success vs Denied",
+          "type": "piechart",
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 8 },
+          "targets": [{ "expr": "sum(increase(auth_server_authconfig_total{namespace=~\"$namespace\"}[1h])) by (authconfig_status)", "legendFormat": "{{`{{authconfig_status}}`}}" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" }
+        },
+        {
+          "title": "Auth Latency P95",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 16, "x": 8, "y": 8 },
+          "targets": [{ "expr": "histogram_quantile(0.95, sum(rate(auth_server_authconfig_duration_seconds_bucket{namespace=~\"$namespace\"}[5m])) by (le))", "legendFormat": "P95" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": { "defaults": { "unit": "s" } }
+        },
+        {
+          "title": "AuthConfig Evaluations by Status",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
+          "targets": [{ "expr": "sum(rate(auth_server_authconfig_total{namespace=~\"$namespace\"}[5m])) by (authconfig_status)", "legendFormat": "{{`{{authconfig_status}}`}}" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" }
+        }
+      ],
+      "templating": {
+        "list": [
+          { "name": "DS_PROMETHEUS", "type": "datasource", "query": "prometheus", "current": { "text": "Prometheus (RHOBS)", "value": "Prometheus (RHOBS)" } },
+          { "name": "namespace", "type": "query", "query": "label_values(auth_server_evaluator_total, namespace)", "multi": true, "includeAll": true, "current": { "text": "All", "value": "$__all" } }
+        ]
+      },
+      "time": { "from": "now-1h", "to": "now" },
+      "schemaVersion": 39
+    }
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+  name: rhcl-limitador
+  namespace: openshift-cluster-observability-operator
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana-observability
+  json: |
+    {
+      "annotations": { "list": [] },
+      "title": "RHCL Limitador (Rate Limiting) Metrics",
+      "uid": "rhcl-limitador",
+      "version": 1,
+      "panels": [
+        {
+          "title": "Rate Limit Decisions Rate",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+          "targets": [
+            { "expr": "sum(rate(limitador_authorized_calls_total{namespace=~\"$namespace\"}[5m])) by (namespace)", "legendFormat": "authorized {{`{{namespace}}`}}" },
+            { "expr": "sum(rate(limitador_limited_calls_total{namespace=~\"$namespace\"}[5m])) by (namespace)", "legendFormat": "limited {{`{{namespace}}`}}" }
+          ],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" }
+        },
+        {
+          "title": "Limit Utilization",
+          "type": "gauge",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+          "targets": [{ "expr": "sum(rate(limitador_limited_calls_total{namespace=~\"$namespace\"}[5m])) / (sum(rate(limitador_authorized_calls_total{namespace=~\"$namespace\"}[5m])) + sum(rate(limitador_limited_calls_total{namespace=~\"$namespace\"}[5m]))) * 100", "legendFormat": "% limited" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "thresholds": { "steps": [{"color":"green","value":null},{"color":"orange","value":30},{"color":"red","value":70}] } } }
+        },
+        {
+          "title": "Authorized vs Limited Calls",
+          "type": "piechart",
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 8 },
+          "targets": [
+            { "expr": "sum(increase(limitador_authorized_calls_total{namespace=~\"$namespace\"}[1h]))", "legendFormat": "Authorized" },
+            { "expr": "sum(increase(limitador_limited_calls_total{namespace=~\"$namespace\"}[1h]))", "legendFormat": "Limited" }
+          ],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" }
+        },
+        {
+          "title": "Limitador Counter Values",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 16, "x": 8, "y": 8 },
+          "targets": [{ "expr": "sum(rate(limitador_authorized_calls_total{namespace=~\"$namespace\"}[5m])) by (limitador_namespace)", "legendFormat": "{{`{{limitador_namespace}}`}}" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" }
+        },
+        {
+          "title": "Rate Limit Latency P95",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
+          "targets": [{ "expr": "histogram_quantile(0.95, sum(rate(limitador_evaluation_duration_seconds_bucket{namespace=~\"$namespace\"}[5m])) by (le))", "legendFormat": "P95" }],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": { "defaults": { "unit": "s" } }
+        }
+      ],
+      "templating": {
+        "list": [
+          { "name": "DS_PROMETHEUS", "type": "datasource", "query": "prometheus", "current": { "text": "Prometheus (RHOBS)", "value": "Prometheus (RHOBS)" } },
+          { "name": "namespace", "type": "query", "query": "label_values(limitador_authorized_calls_total, namespace)", "multi": true, "includeAll": true, "current": { "text": "All", "value": "$__all" } }
+        ]
+      },
+      "time": { "from": "now-1h", "to": "now" },
+      "schemaVersion": 39
+    }

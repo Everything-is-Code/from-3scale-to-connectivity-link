@@ -227,15 +227,21 @@ Key takeaway: Connectivity Link reduces the total number of CRDs from *14 resour
 | Native Backstage catalog entities (`kuadrant.io/*` annotations); APIShift can register via Scaffolder
 |===
 
-== Choosing a migration path
+== Choosing a migration strategy
+
+Same set as the xref:index.adoc[Home] first impression — pick by team workflow:
 
 [cols="1,2,2",options="header"]
 |===
-| Path | Best when | Module
+| Strategy | Best when | Module
 
-| *Software Template* (Developer Hub)
+| *Developer Hub — Golden Path*
 | You want GitOps manifests in Gitea + Argo CD Application for your user namespace
-| xref:07-run-migration.adoc[7. Run the Migration]
+| xref:07-run-migration.adoc[7. Golden Path]
+
+| *Kuadrant Console*
+| Day-2 after policies exist (products, keys, traffic, Swagger)
+| xref:11-kuadrant-console.adoc[11. Kuadrant Console]
 
 | *Migration Toolkit*
 | You want a guided wizard against a live 3scale Admin API (no AI)
@@ -244,10 +250,6 @@ Key takeaway: Connectivity Link reduces the total number of CRDs from *14 resour
 | *APIShift*
 | Same migration as the toolkit, plus AI assist and catalog registration
 | xref:13-apishift-gateforge.adoc[13. APIShift]
-
-| *Kuadrant Console*
-| Day-2 after policies exist (products, keys, traffic, Swagger)
-| xref:11-kuadrant-console.adoc[11. Kuadrant Console]
 |===
 
 == Observability comparison

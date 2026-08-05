@@ -66,4 +66,4 @@ Requires `oc` logged in with permission to read Routes and Secrets.
 
 == Next
 
-Return to xref:10-summary.adoc[Summary] or revisit optional modules (Kuadrant Console, Migration Toolkit, APIShift).
+Return to xref:10-summary.adoc[Summary] or revisit the strategy modules (xref:07-run-migration.adoc[Golden Path], xref:11-kuadrant-console.adoc[Kuadrant Console], xref:12-migration-toolkit.adoc[Migration Toolkit], xref:13-apishift-gateforge.adoc[APIShift]).

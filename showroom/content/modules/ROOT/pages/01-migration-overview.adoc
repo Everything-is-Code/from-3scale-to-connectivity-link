@@ -13,7 +13,28 @@
 
 *Red Hat 3scale API Management* has been the standard platform for managing APIs on OpenShift. *Red Hat Connectivity Link* (powered by Kuadrant) represents the next generation — a Kubernetes-native approach that uses the Gateway API standard, GitOps, and declarative CRDs instead of a separate management plane.
 
-This module introduces the key concepts of both products and explains why organizations are migrating.
+This module introduces the key concepts of both products and explains why organizations are migrating. The lab is built around *four strategies* to get there — not one tool.
+
+== The strategy set (keep this mental model)
+
+[cols="2,3",options="header"]
+|===
+| Strategy | One-line pitch
+
+| *Developer Hub — Golden Path*
+| Software Template → Git → Argo CD → Kuadrant. Self-service GitOps; primary hands-on path in this workshop (xref:07-run-migration.adoc[module 7]).
+
+| *Kuadrant Console*
+| Operate API Products, keys, traffic, and Swagger after (or alongside) migration (xref:11-kuadrant-console.adoc[module 11]).
+
+| *Migration Toolkit*
+| Guided discovery from a live 3scale Admin API into Connectivity Link config (xref:12-migration-toolkit.adoc[module 12]).
+
+| *APIShift*
+| Same migration core as the Toolkit + AI assist + register into Developer Hub (xref:13-apishift-gateforge.adoc[module 13]).
+|===
+
+You will *explore* source and target first (modules 3–6), then *execute* the Golden Path and the UIs. See the xref:index.adoc[Home] strategies table for the full first-impression map.
 
 == 3scale concepts
 

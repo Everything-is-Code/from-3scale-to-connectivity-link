@@ -1,7 +1,7 @@
 = APIShift
 
 [.lead]
-*Estimated time*: ~15 minutes · *Optional*
+*Estimated time*: ~15 minutes · *Strategy*: APIShift
 
 == Learning objectives
 
@@ -9,7 +9,7 @@
 * Register the migrated component into Developer Hub
 * Explain how AI assist (`litemaas`) differentiates APIShift from Migration Toolkit
 
-*APIShift* is an end-to-end migration console. It performs the *same* 3scale → Connectivity Link migration path as the xref:12-migration-toolkit.adoc[Migration Toolkit], and adds two capabilities on top:
+*APIShift* is one of the four workshop strategies: an end-to-end migration console. It performs the *same* 3scale → Connectivity Link migration path as the xref:12-migration-toolkit.adoc[Migration Toolkit], and adds two capabilities on top:
 
 * *AI model assist* (shared workshop `litemaas` endpoint / model)
 * *Developer Hub* catalog registration via the Scaffolder API
@@ -97,6 +97,6 @@ See the repository README section *Configuring an AI / LLM Model*.
 
 * xref:12-migration-toolkit.adoc[Migration Toolkit] — same migration path without AI / catalog registration
 * xref:11-kuadrant-console.adoc[Kuadrant Console] — operate API Products and keys after migration
-* xref:07-run-migration.adoc[Run the Migration Template] — Backstage Software Template path
+* xref:07-run-migration.adoc[Golden Path (Developer Hub)] — Software Template → Gitea → Argo CD
 
 Chart: https://github.com/Everything-is-Code/apishift

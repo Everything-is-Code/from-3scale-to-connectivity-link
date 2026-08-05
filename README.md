@@ -1,6 +1,13 @@
 # From 3scale to Connectivity Link
 
-Demonstrates how to migrate API management from **Red Hat 3scale API Management** to **Red Hat Connectivity Link** (powered by [Kuadrant](https://kuadrant.io/)) using a **Software Template** in **Red Hat Developer Hub**.
+Migrate API management from **Red Hat 3scale API Management** to **Red Hat Connectivity Link** (powered by [Kuadrant](https://kuadrant.io/)) with a **set of four strategies**:
+
+| Strategy | Role |
+|----------|------|
+| **Developer Hub — Golden Path** | Self-service Software Template → Gitea → Argo CD → Kuadrant CRDs + catalog |
+| **Kuadrant Console** | Day-2 operate API Products, keys, traffic, Swagger in OpenShift Console |
+| **Migration Toolkit** | Guided wizard against a live 3scale Admin API (no AI) |
+| **APIShift** | Same migration core as the Toolkit + AI assist + Developer Hub registration |
 
 ## Official Product Documentation
 
@@ -31,7 +38,7 @@ This repository provisions a complete migration workshop environment on OpenShif
 
 1. **3scale environment** (source): Neuralbank (OIDC) + NFL Wallet (API Key) secured by 3scale
 2. **Connectivity Link environment** (target): Same apps secured by Kuadrant/Istio Gateway API
-3. **Migration Software Template**: A generic Backstage template that migrates any app from 3scale to Connectivity Link
+3. **Four migration strategies**: Developer Hub Golden Path, Kuadrant Console, Migration Toolkit, APIShift
 4. **Side-by-side comparison**: Both environments coexist for validation
 
 ## Architecture
@@ -61,9 +68,9 @@ This repository provisions a complete migration workshop environment on OpenShif
 | **Migration Toolkit RHCL** | Guided Mushino GUI for 3scale → Connectivity Link (`helmApps.migration-toolkit-rhcl`). Docs: [Everything-is-Code/migration-toolkit-rhcl](https://github.com/Everything-is-Code/migration-toolkit-rhcl) |
 | **Kuadrant Console** | OpenShift Console plugin for Connectivity Link (`helmApps.custom-rhcl-console`). Docs: [custom-rhcl-console](https://maximilianopizarro.github.io/custom-rhcl-console/) |
 
-### Migration Tooling Deep Dive
+### Migration strategies deep dive
 
-This quickstart ships **three complementary UIs** for the Connectivity Link journey. **APIShift** and **Migration Toolkit** perform the same 3scale → Connectivity Link migration; APIShift additionally supports **AI models** (via `litemaas`) and Developer Hub catalog registration. **Kuadrant Console** covers day-2 API product / key / metrics operations.
+This quickstart ships **four strategies**. The **Developer Hub Golden Path** is the GitOps Software Template. **APIShift** and **Migration Toolkit** perform the same 3scale → Connectivity Link migration; APIShift additionally supports **AI models** (via `litemaas`) and Developer Hub catalog registration. **Kuadrant Console** covers day-2 API product / key / metrics operations.
 
 ![Kuadrant Console Architecture](docs/images/kuadrant-console-arch.png)
 

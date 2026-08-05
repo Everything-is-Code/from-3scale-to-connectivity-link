@@ -1,31 +1,56 @@
 = From 3scale to Connectivity Link
 
-*Migration Workshop — Red Hat Developer Hub · Powered by https://kuadrant.io[Kuadrant]*
+*Migration Workshop — four strategies to Connectivity Link · Powered by https://kuadrant.io[Kuadrant]*
 
 [.lead]
-*Total duration*: ~3–3.5 hours core path · +~1 hour optional modules (VM, Console, Migration Toolkit, APIShift)
+*Total duration*: ~3–3.5 hours · strategies below are the *core story* · +~30 min optional VM lab
 
 == Welcome
 
-In this workshop you will learn how to migrate API management from *Red Hat 3scale API Management* to *Red Hat Connectivity Link* (Kuadrant), using *Red Hat Developer Hub* as your self-service developer portal.
+Migrate API management from *Red Hat 3scale API Management* to *Red Hat Connectivity Link* (Kuadrant) with a clear set of strategies — not a single button.
 
-The cluster has two sets of pre-deployed applications — one secured by 3scale and one secured by Connectivity Link — running side by side so you can compare them directly.
+The workshop ships *four complementary approaches*. Explore pre-deployed 3scale and Connectivity Link apps side by side, then pick the path that fits your team.
 
 NOTE: URLs that contain `\{cluster_domain}` or `apps.cluster.example.com` are *placeholders*. On a *deployed showroom* they are replaced automatically with your cluster ingress domain. On https://maximilianopizarro.github.io/from-3scale-to-connectivity-link/[GitHub Pages] they remain examples and will not resolve — use this site as documentation preview only.
 
 IMPORTANT: Workshop usernames and passwords are *ephemeral lab credentials*. They exist only for this disposable environment. Do not reuse the same password patterns or share production secrets in training materials.
 
+== Migration strategies (first impression)
+
+image::migration-flow.png["3scale to Connectivity Link — Developer Hub Golden Path, Migration Toolkit, APIShift, and Kuadrant Console"]
+
+[cols="2,3,2",options="header"]
+|===
+| Strategy | Role | Module
+
+| *Developer Hub — Golden Path*
+| Self-service *Software Template*: scaffolder → Gitea → Argo CD → Kuadrant CRDs + catalog. The GitOps golden path for platform teams.
+| xref:07-run-migration.adoc[7. Golden Path]
+
+| *Kuadrant Console*
+| Day-2 operate Connectivity Link in OpenShift Console: API Products, keys, traffic, Grafana / Swagger.
+| xref:11-kuadrant-console.adoc[11. Kuadrant Console]
+
+| *Migration Toolkit*
+| Guided wizard against a live 3scale Admin API — discover Products / Plans and produce CL config (no AI).
+| xref:12-migration-toolkit.adoc[12. Migration Toolkit]
+
+| *APIShift*
+| Same migration core as the Toolkit, plus *AI assist* (`litemaas`) and Developer Hub catalog registration.
+| xref:13-apishift-gateforge.adoc[13. APIShift]
+|===
+
+TIP: Run at least the *Golden Path* (module 7) in the lab. Use *Toolkit* or *APIShift* when you want a GUI against real 3scale Admin API data; use *Kuadrant Console* after policies exist.
+
 == What you will learn
 
+* Name the *four migration strategies* and when to use each
 * Understand *why* organizations migrate from 3scale to Connectivity Link
-* Explore the architecture: Developer Hub, ArgoCD, Keycloak, Kuadrant, 3scale, Istio
-* Inspect two 3scale-secured applications (OIDC and API Key)
-* Inspect the equivalent Connectivity Link applications
-* Compare authentication, rate limiting, GitOps, and developer experience side by side
-* *Run the migration* using a generic Developer Hub Software Template
-* Operate day-2 APIs with *Kuadrant Console*, explore *Migration Toolkit*, and *APIShift* (same migration path as the toolkit, plus AI models)
-* *(Optional)* provision a RHEL VM behind Connectivity Link using API key auth via another Software Template
-* Verify the migrated application and test both environments
+* Explore the architecture (Developer Hub, Argo CD, Keycloak, Kuadrant, 3scale, Istio)
+* Inspect 3scale vs Connectivity Link apps (OIDC + API Key) and compare side by side
+* Execute the *Developer Hub Golden Path* Software Template
+* Practice *Kuadrant Console*, *Migration Toolkit*, and *APIShift*
+* Verify the migrated application; *(optional)* provision a RHEL VM behind Connectivity Link
 
 == Pre-deployed scenarios
 
@@ -63,12 +88,23 @@ For *non-OAuth* admin consoles (Argo CD, Grafana, Gitea, Keycloak, 3scale, APISh
 
 == Workshop platform links
 
+Strategy entry points first; then supporting platform tools.
+
 [cols="1,3",options="header"]
 |===
 | Tool | URL
 
-| *Developer Hub*
+| *Developer Hub* (Golden Path)
 | https://backstage-developer-hub-developer-hub.{cluster_domain}
+
+| *Kuadrant Console* (day-2)
+| OpenShift Console → *Connectivity Link* plugin — https://console-openshift-console.{cluster_domain}
+
+| *Migration Toolkit*
+| https://migration-toolkit.{cluster_domain}
+
+| *APIShift*
+| https://gateforge-gateforge.{cluster_domain}
 
 | *Gitea*
 | https://gitea-gitea.{cluster_domain}
@@ -98,16 +134,17 @@ TIP: Use the *Terminal* tab for `oc` / `curl` in this showroom (it loads the emb
 
 image::workshop-flow.svg[Workshop flow from Developer Hub through Gitea and Argo CD to OpenShift and Kuadrant policies]
 
-Text alternative — workshop flow steps:
+Text alternative — Golden Path (Developer Hub) steps:
 
-. Start in *Developer Hub* (Software Templates / catalog).
+. Start in *Developer Hub* (Software Templates / catalog) — the Golden Path.
 . Scaffold or migrate — manifests land in *Gitea*.
 . *Argo CD* syncs desired state to OpenShift.
 . *Istio Gateway* + *Kuadrant* policies (AuthPolicy / RateLimitPolicy / PlanPolicy) enforce traffic.
-. Verify with curl / Swagger and optional day-2 UIs (Kuadrant Console, Migration Toolkit, APIShift).
+. Operate and migrate with the other strategies: *Kuadrant Console*, *Migration Toolkit*, *APIShift*.
 
 == Start here
 
+. Skim the *Migration strategies* table above — that is the workshop thesis.
 . Complete xref:00-prerequisites.adoc[0. Prerequisites & Sizing] (~10 min).
 . Continue with xref:01-migration-overview.adoc[1. Migration Overview].
 

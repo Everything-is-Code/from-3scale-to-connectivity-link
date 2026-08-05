@@ -57,9 +57,11 @@ image::cluster-layout.svg["3scale source workloads and Connectivity Link target 
 | Same migration path as Migration Toolkit, plus AI models and Developer Hub registration. See xref:13-apishift-gateforge.adoc[module 13].
 |===
 
-== Migration tooling overview
+== Migration strategies overview
 
-image::migration-flow.png["Migration flow from 3scale through APIShift and Migration Toolkit into Connectivity Link — both tools share the path; APIShift adds AI"]
+The workshop thesis is a *set of four strategies*: Developer Hub Golden Path, Kuadrant Console, Migration Toolkit, and APIShift (see xref:index.adoc[Home]).
+
+image::migration-flow.png["Migration flow from 3scale through APIShift and Migration Toolkit into Connectivity Link — Developer Hub Golden Path is the GitOps path; APIShift adds AI"]
 
 == Request flow comparison
 

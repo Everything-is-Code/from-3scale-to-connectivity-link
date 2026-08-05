@@ -29,7 +29,7 @@ When you join a deployed workshop instance, the cluster already includes:
 * *3scale* (source) and *Connectivity Link / Kuadrant* (target) side by side
 * *Red Hat Developer Hub*, *Keycloak (RHBK)*, *Gitea*, *Argo CD*
 * *Istio* (Service Mesh / Gateway API data plane)
-* Observability (Grafana, Thanos, Tempo) and day-2 UIs (Kuadrant Console, Migration Toolkit, APIShift)
+* Observability (Grafana, Thanos, Tempo) and the migration strategy set (Developer Hub Golden Path, Kuadrant Console, Migration Toolkit, APIShift)
 
 You do *not* install these operators during the lab — you explore and migrate against them.
 

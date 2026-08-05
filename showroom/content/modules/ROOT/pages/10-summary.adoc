@@ -11,14 +11,33 @@
 
 Congratulations! You have completed the migration workshop. This module recaps what you learned, shows the conversion patterns, and provides links to official documentation.
 
+== Strategy set (recap)
+
+[cols="2,3",options="header"]
+|===
+| Strategy | You practiced it when…
+
+| *Developer Hub — Golden Path*
+| xref:07-run-migration.adoc[Module 7] Software Template → Gitea → Argo CD
+
+| *Kuadrant Console*
+| xref:11-kuadrant-console.adoc[Module 11] API Products, keys, traffic
+
+| *Migration Toolkit*
+| xref:12-migration-toolkit.adoc[Module 12] Guided 3scale Admin API path
+
+| *APIShift*
+| xref:13-apishift-gateforge.adoc[Module 13] Same path + AI + catalog registration
+|===
+
 == What you accomplished
 
 . Reviewed xref:00-prerequisites.adoc[prerequisites and environment sizing]
 . Explored the *3scale environment* — Products, Backends, Application Plans, APIcast
 . Explored the *Connectivity Link environment* — Gateway, HTTPRoute, OIDCPolicy, AuthPolicy, RateLimitPolicy, PlanPolicy, APIProduct
 . Compared both approaches *side by side* across authentication, rate limiting, GitOps, and developer experience
-. Ran the *migration template* from Developer Hub to generate all Connectivity Link resources automatically
-. Explored the three migration UIs: xref:11-kuadrant-console.adoc[Kuadrant Console], xref:12-migration-toolkit.adoc[Migration Toolkit], and xref:13-apishift-gateforge.adoc[APIShift]
+. Ran the *Developer Hub Golden Path* to generate Connectivity Link resources via Software Template
+. Used the strategy UIs: xref:11-kuadrant-console.adoc[Kuadrant Console], xref:12-migration-toolkit.adoc[Migration Toolkit], and xref:13-apishift-gateforge.adoc[APIShift]
 . *(Optional activity)* provisioned a *RHEL VM* with *Connectivity Link* and *API key* auth using the *RHEL Virtual Machine* scaffolder template
 . Verified the migrated application works identically to the 3scale original
 . Used xref:14-troubleshooting.adoc[Troubleshooting] when needed

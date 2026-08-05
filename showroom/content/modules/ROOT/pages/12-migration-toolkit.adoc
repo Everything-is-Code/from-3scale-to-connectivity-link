@@ -1,7 +1,7 @@
 = Migration Toolkit RHCL
 
 [.lead]
-*Estimated time*: ~15 minutes · *Optional*
+*Estimated time*: ~15 minutes · *Strategy*: Migration Toolkit
 
 == Learning objectives
 
@@ -9,7 +9,7 @@
 * Discover Products / Plans and review proposed Connectivity Link mappings
 * Contrast this guided path with APIShift (same migration, no AI)
 
-The *Migration Toolkit* is a guided Quarkus + PatternFly application that connects to a 3scale Admin API, discovers Products / Backends / Plans, and helps you produce Connectivity Link (Kuadrant) configuration.
+The *Migration Toolkit* is one of the four workshop strategies: a guided Quarkus + PatternFly application that connects to a 3scale Admin API, discovers Products / Backends / Plans, and helps you produce Connectivity Link (Kuadrant) configuration.
 
 == Where it fits
 

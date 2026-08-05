@@ -1,7 +1,7 @@
 = Kuadrant Console (Connectivity Link plugin)
 
 [.lead]
-*Estimated time*: ~15 minutes · *Optional*
+*Estimated time*: ~15 minutes · *Strategy*: Kuadrant Console (day-2)
 
 == Learning objectives
 
@@ -9,7 +9,7 @@
 * Create / approve an API Key and reveal its Secret value
 * Use traffic / Grafana deep links for day-2 operations
 
-Day-2 operations for Connectivity Link happen in the *Kuadrant Console* — an OpenShift Console dynamic plugin (`custom-rhcl-console`) that surfaces API Products, API Keys, traffic metrics, Grafana deep links, and Swagger UI.
+*Kuadrant Console* is the *day-2 operate* strategy in this workshop’s set (with Developer Hub Golden Path, Migration Toolkit, and APIShift). It is an OpenShift Console dynamic plugin (`custom-rhcl-console`) that surfaces API Products, API Keys, traffic metrics, Grafana deep links, and Swagger UI.
 
 == Architecture
 

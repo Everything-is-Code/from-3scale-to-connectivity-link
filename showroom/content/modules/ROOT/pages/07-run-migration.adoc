@@ -1,13 +1,15 @@
-= Run the Migration Template
+= Golden Path: Developer Hub Software Template
 
 [.lead]
-*Estimated time*: ~25 minutes
+*Estimated time*: ~25 minutes · *Strategy*: Developer Hub Golden Path
 
 == Learning objectives
 
-* Run the *Migrate from 3scale to Connectivity Link* Software Template in Developer Hub
+* Run the *Migrate from 3scale to Connectivity Link* Software Template — the workshop *Golden Path*
 * Understand the manifests the scaffolder generates (Gateway, HTTPRoute, policies, APIProduct)
 * Confirm Gitea publish + Argo CD Application creation for your user namespace
+
+This is the *self-service GitOps* strategy in the workshop set (alongside xref:11-kuadrant-console.adoc[Kuadrant Console], xref:12-migration-toolkit.adoc[Migration Toolkit], and xref:13-apishift-gateforge.adoc[APIShift]).
 
 In this module you will use the *"Migrate from 3scale to Connectivity Link"* Software Template in Developer Hub to migrate one of the pre-deployed 3scale applications.
 
@@ -364,22 +366,23 @@ All resources should exist and show healthy status.
 
 image::resource-mapping.svg[Mapping from 3scale concepts to Connectivity Link resources]
 
-== Other migration paths (same target)
+== The rest of the strategy set (same target)
 
-This module uses the *Software Template* path (scaffolder → Gitea → Argo CD). The lab also ships two GUIs that produce the same Connectivity Link resource types:
+You just ran the *Golden Path*. The same Connectivity Link resource types can also come from the guided UIs; day-2 ops land in the Console:
 
 [cols="1,2",options="header"]
 |===
-| Tool | When to use it
+| Strategy | When to use it
 
 | xref:12-migration-toolkit.adoc[Migration Toolkit]
 | Guided discovery against 3scale Admin API; no AI
 
 | xref:13-apishift-gateforge.adoc[APIShift]
 | Same migration core + AI models (`litemaas`) + register the component in Developer Hub
-|===
 
-After policies exist, operate keys and traffic with xref:11-kuadrant-console.adoc[Kuadrant Console].
+| xref:11-kuadrant-console.adoc[Kuadrant Console]
+| After policies exist — products, keys, traffic, Swagger
+|===
 
 == Next
 

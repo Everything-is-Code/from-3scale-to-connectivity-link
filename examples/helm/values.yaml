@@ -529,6 +529,9 @@ connectivityLink:
           tempoGatewayRouteName: tempo-connectivity-link-jaegerui
           tempoStackName: connectivity-link
           developerHubUrl: "https://backstage-developer-hub-developer-hub.{{ .Values.deployer.domain }}"
+          costCurrency: USD
+          costBudget: "500"
+          costPricing: '{"free":{"tokens_per_1k":0,"calls_per_1k":0},"basic":{"tokens_per_1k":0.05,"calls_per_1k":0.02},"pro":{"tokens_per_1k":0.10,"calls_per_1k":0.05},"anonymous":{"tokens_per_1k":0,"calls_per_1k":0.01}}'
         dnsProber:
           enabled: true
           image:

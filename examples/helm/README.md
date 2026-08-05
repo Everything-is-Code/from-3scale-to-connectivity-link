@@ -42,7 +42,7 @@ Connectivity-link manifests are **vendored** from [connectivity-link](https://gi
 | `connectivityLink.apps[]` | Toggle each connectivity-link app, destination namespace, prune, sync-wave |
 | `connectivityLink.operators` | `channel`, `version`, `subscriptions` passed to `connectivity-link-operators` |
 | `connectivityLink.neuralbank` | Values merged into `connectivity-link-neuralbank-stack`; Keycloak URLs are overridden from `deployer.domain` |
-| `litemaas.*` | Single LLM source (RHDP injects `apiKey`). Propagated to OLS, Developer Hub Lightspeed, openshift-mcp-server LiteLLM, ApiShift `ai.*`, and `apishift-secrets` (`gateforge-ai-secret`). Defaults: MaaS RHDP endpoint + `llama-scout-17b`. Never commit real API keys. |
+| `litemaas.*` | Single LLM source (RHDP injects `apiKey`). Propagated to OLS, Developer Hub Lightspeed, openshift-mcp-server LiteLLM, ApiShift `ai.*`, and `apishift-secrets` (`gateforge-ai-secret`). Defaults: MaaS RHDP endpoint + `qwen3-14b`. Never commit real API keys. |
 | `maas.*` / `lightspeed.*` | Legacy fallbacks if `litemaas.*` is empty |
 | `components.showroom` | Showroom content repo, nookbag, terminal (default: from-3scale-to-connectivity-link) |
 

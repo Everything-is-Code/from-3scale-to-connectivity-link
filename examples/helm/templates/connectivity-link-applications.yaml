@@ -7,7 +7,7 @@
 {{- $lightspeed := .Values.lightspeed | default dict }}
 {{- $llmEndpoint := $litemaas.apiUrl | default $maas.endpoint | default $lightspeed.llmEndpoint }}
 {{- $llmKey := $litemaas.apiKey | default $maas.apiKey | default $lightspeed.llmApiKey }}
-{{- $llmModel := $litemaas.model | default $maas.model | default "llama-scout-17b" }}
+{{- $llmModel := $litemaas.model | default $maas.model | default "qwen3-14b" }}
 {{- range .Values.connectivityLink.apps }}
 {{- if and . .enabled }}
 ---
@@ -319,6 +319,10 @@ spec:
       valuesObject:
         clusterDomain: {{ $domain }}
     {{- else if eq .path "mock-apis-3scale" }}
+    helm:
+      valuesObject:
+        clusterDomain: {{ $domain }}
+    {{- else if eq .path "kuadrant-console-demo" }}
     helm:
       valuesObject:
         clusterDomain: {{ $domain }}

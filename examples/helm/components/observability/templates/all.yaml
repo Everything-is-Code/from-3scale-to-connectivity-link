@@ -84,6 +84,7 @@ spec:
     - istio-system
     - user1-neuralbank
     - kuadrant-system
+    - kuadrant-console-demo
     - mcp-system
   podMetricsEndpoints:
   - interval: 30s
@@ -461,6 +462,46 @@ spec:
       host: grafana-observability.{{ .Values.clusterDomain | default "apps.cluster.example.com" }}
       tls:
         termination: edge
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openshift-tempo
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  labels:
+    kubernetes.io/metadata.name: openshift-tempo
+---
+apiVersion: tempo.grafana.com/v1alpha1
+kind: TempoMonolithic
+metadata:
+  name: connectivity-link
+  namespace: openshift-tempo
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+spec:
+  storage:
+    traces:
+      backend: memory
+      size: 2Gi
+  jaegerui:
+    enabled: true
+    route:
+      enabled: true
+      termination: edge
+  observability:
+    metrics:
+      createServiceMonitors: true
+      createPrometheusRules: true
+    tracing:
+      sampling_fraction: "1.0"
+      jaeger_agent_endpoint: localhost:6831
+  ingestion:
+    otlp:
+      grpc:
+        enabled: true
+      http:
+        enabled: true
 ---
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDatasource
@@ -1081,6 +1122,150 @@ spec:
       "schemaVersion": 39
     }
 ---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+  name: kuadrant-policy-metrics
+  namespace: openshift-cluster-observability-operator
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana-observability
+  json: |
+    {
+      "annotations": { "list": [] },
+      "title": "Kuadrant Policy Metrics",
+      "uid": "kuadrant-policy-metrics",
+      "version": 1,
+      "panels": [
+        {
+          "title": "Auth Decisions (2xx vs 401 vs 403)",
+          "description": "Authenticated vs rejected requests across all Kuadrant-protected routes",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+          "fieldConfig": {
+            "defaults": { "unit": "reqps", "custom": { "fillOpacity": 10, "lineWidth": 2 } }
+          },
+          "targets": [
+            {
+              "expr": "sum(rate(istio_requests_total{response_code=~\"2..\", destination_workload_namespace=~\"kuadrant-console-demo|neuralbank-stack|nfl-wallet-prod\"}[5m])) by (destination_workload_namespace)",
+              "legendFormat": "{{`{{destination_workload_namespace}}`}} 2xx"
+            },
+            {
+              "expr": "sum(rate(istio_requests_total{response_code=\"401\", destination_workload_namespace=~\"kuadrant-console-demo|neuralbank-stack|nfl-wallet-prod\"}[5m])) by (destination_workload_namespace)",
+              "legendFormat": "{{`{{destination_workload_namespace}}`}} 401"
+            },
+            {
+              "expr": "sum(rate(istio_requests_total{response_code=\"403\", destination_workload_namespace=~\"kuadrant-console-demo|neuralbank-stack|nfl-wallet-prod\"}[5m])) by (destination_workload_namespace)",
+              "legendFormat": "{{`{{destination_workload_namespace}}`}} 403"
+            }
+          ],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" }
+        },
+        {
+          "title": "Rate Limit Rejections (429)",
+          "description": "Requests rejected by Kuadrant RateLimitPolicy / PlanPolicy per namespace",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+          "fieldConfig": {
+            "defaults": { "unit": "reqps", "custom": { "fillOpacity": 15, "lineWidth": 2, "drawStyle": "bars" } }
+          },
+          "targets": [
+            {
+              "expr": "sum(rate(istio_requests_total{response_code=\"429\", destination_workload_namespace=~\"kuadrant-console-demo|neuralbank-stack|nfl-wallet-prod\"}[5m])) by (destination_workload_namespace)",
+              "legendFormat": "{{`{{destination_workload_namespace}}`}}"
+            }
+          ],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" }
+        },
+        {
+          "title": "Request Rate by API Route",
+          "description": "Per-route traffic through Kuadrant-protected gateways",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 },
+          "fieldConfig": {
+            "defaults": { "unit": "reqps", "custom": { "fillOpacity": 5, "lineWidth": 1 } }
+          },
+          "targets": [
+            {
+              "expr": "sum(rate(istio_requests_total{destination_workload_namespace=\"kuadrant-console-demo\"}[5m])) by (destination_workload, response_code)",
+              "legendFormat": "{{`{{destination_workload}}`}} [{{`{{response_code}}`}}]"
+            }
+          ],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" }
+        },
+        {
+          "title": "P95 Latency by Route",
+          "description": "95th percentile latency for Kuadrant demo routes",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+          "fieldConfig": {
+            "defaults": { "unit": "ms", "custom": { "fillOpacity": 5 } }
+          },
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.95, sum(rate(istio_request_duration_milliseconds_bucket{destination_workload_namespace=\"kuadrant-console-demo\"}[5m])) by (le, destination_workload))",
+              "legendFormat": "{{`{{destination_workload}}`}}"
+            }
+          ],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" }
+        },
+        {
+          "title": "Auth + Rate Limit Status Overview",
+          "description": "Current state of all Kuadrant-protected namespaces",
+          "type": "stat",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+          "fieldConfig": {
+            "defaults": {
+              "thresholds": { "mode": "absolute", "steps": [
+                { "color": "green", "value": null },
+                { "color": "orange", "value": 0.01 },
+                { "color": "red", "value": 0.05 }
+              ]}
+            }
+          },
+          "targets": [
+            {
+              "expr": "sum(rate(istio_requests_total{response_code=~\"4..\", destination_workload_namespace=~\"kuadrant-console-demo|neuralbank-stack|nfl-wallet-prod\"}[5m])) / sum(rate(istio_requests_total{destination_workload_namespace=~\"kuadrant-console-demo|neuralbank-stack|nfl-wallet-prod\"}[5m]))",
+              "legendFormat": "Error Ratio (4xx)"
+            }
+          ],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" }
+        },
+        {
+          "title": "Requests by Response Code (All Kuadrant Namespaces)",
+          "description": "Stacked breakdown of all response codes across Kuadrant-protected services",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 24 },
+          "fieldConfig": {
+            "defaults": { "unit": "reqps", "custom": { "fillOpacity": 30, "lineWidth": 1, "stacking": { "mode": "normal" } } }
+          },
+          "targets": [
+            {
+              "expr": "sum(rate(istio_requests_total{destination_workload_namespace=~\"kuadrant-console-demo|neuralbank-stack|nfl-wallet-prod\"}[5m])) by (response_code)",
+              "legendFormat": "{{`{{response_code}}`}}"
+            }
+          ],
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" }
+        }
+      ],
+      "templating": {
+        "list": [
+          {
+            "name": "DS_PROMETHEUS",
+            "type": "datasource",
+            "query": "prometheus",
+            "current": { "text": "Prometheus (RHOBS)", "value": "Prometheus (RHOBS)" }
+          }
+        ]
+      },
+      "time": { "from": "now-1h", "to": "now" },
+      "refresh": "30s",
+      "schemaVersion": 39
+    }
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -1095,6 +1280,7 @@ data:
     NB_HOST="neuralbank.${DOMAIN}"
     NFL_HOST="nfl-wallet.${DOMAIN}"
     LM_HOST="litemaas.${DOMAIN}"
+    DEMO_HOST="kuadrant-demo.${DOMAIN}"
     NFL_KEY="nfl-wallet-demo-key-2024"
 
     echo "=== Mesh Traffic Generator ==="
@@ -1120,6 +1306,28 @@ data:
       # LiteMaaS via gateway (200, L7 waypoint metrics)
       curl -sk -o /dev/null -w "${TS} %{http_code} lm-gw/\n" --connect-timeout 2 --max-time 4 \
         -H "Host: $LM_HOST" "http://litemaas-gateway-istio.litemaas.svc:8080/" &
+      # Kuadrant Console demo APIs via gateway (API key auth, rate limiting)
+      curl -sk -o /dev/null -w "${TS} %{http_code} demo/inventory\n" --connect-timeout 2 --max-time 4 \
+        -H "Host: $DEMO_HOST" -H "X-API-Key: demo-inventory-service-key" \
+        "http://demo-gateway-istio.kuadrant-console-demo.svc:80/inventory" &
+      curl -sk -o /dev/null -w "${TS} %{http_code} demo/payments\n" --connect-timeout 2 --max-time 4 \
+        -H "Host: $DEMO_HOST" -H "X-API-Key: demo-payment-gateway-key" \
+        "http://demo-gateway-istio.kuadrant-console-demo.svc:80/payments" &
+      curl -sk -o /dev/null -w "${TS} %{http_code} demo/orders\n" --connect-timeout 2 --max-time 4 \
+        -H "Host: $DEMO_HOST" -H "X-API-Key: demo-order-management-key" \
+        "http://demo-gateway-istio.kuadrant-console-demo.svc:80/orders" &
+      curl -sk -o /dev/null -w "${TS} %{http_code} demo/loyalty\n" --connect-timeout 2 --max-time 4 \
+        -H "Host: $DEMO_HOST" -H "X-API-Key: demo-customer-loyalty-key" \
+        "http://demo-gateway-istio.kuadrant-console-demo.svc:80/loyalty" &
+      curl -sk -o /dev/null -w "${TS} %{http_code} demo/shipping\n" --connect-timeout 2 --max-time 4 \
+        -H "Host: $DEMO_HOST" -H "X-API-Key: demo-shipping-tracker-key" \
+        "http://demo-gateway-istio.kuadrant-console-demo.svc:80/shipping" &
+      curl -sk -o /dev/null -w "${TS} %{http_code} demo/notifications\n" --connect-timeout 2 --max-time 4 \
+        -H "Host: $DEMO_HOST" -H "X-API-Key: demo-notification-hub-key" \
+        "http://demo-gateway-istio.kuadrant-console-demo.svc:80/notifications" &
+      # Kuadrant demo: unauthenticated hit to trigger 401 (auth metrics)
+      curl -sk -o /dev/null -w "${TS} %{http_code} demo/inventory-nokey\n" --connect-timeout 2 --max-time 4 \
+        -H "Host: $DEMO_HOST" "http://demo-gateway-istio.kuadrant-console-demo.svc:80/inventory" &
       # user1-neuralbank-backend via gateway (API Key auth)
       curl -sk -o /dev/null -w "${TS} %{http_code} u1-nb/api/customers\n" --connect-timeout 2 --max-time 4 \
         "http://neuralbank-backend-gateway-istio.user1-neuralbank.svc:8080/api/customers" &

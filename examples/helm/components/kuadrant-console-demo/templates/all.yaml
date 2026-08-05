@@ -1,0 +1,357 @@
+{{- $domain := .Values.clusterDomain | default "apps.cluster.example.com" }}
+{{- $mockNs := .Values.mockNamespace | default "mock-apis-3scale" }}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kuadrant-console-demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  labels:
+    kubernetes.io/metadata.name: kuadrant-console-demo
+    kuadrant.io/namespace: "true"
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: demo-gateway
+  namespace: kuadrant-console-demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+  labels:
+    app.kubernetes.io/part-of: kuadrant-console-demo
+spec:
+  gatewayClassName: istio
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: demo-gateway
+  namespace: kuadrant-console-demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+    haproxy.router.openshift.io/timeout: 60s
+spec:
+  host: kuadrant-demo.{{ $domain }}
+  port:
+    targetPort: http
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  to:
+    kind: Service
+    name: demo-gateway-istio
+    weight: 100
+{{- range .Values.apis }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .name }}
+  namespace: kuadrant-console-demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+  labels:
+    app.kubernetes.io/part-of: kuadrant-console-demo
+    app.kubernetes.io/name: {{ .name }}
+spec:
+  type: ExternalName
+  externalName: {{ .name }}.{{ $mockNs }}.svc.cluster.local
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .name }}-api-key
+  namespace: kuadrant-console-demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+    secret.kuadrant.io/plan-id: basic
+  labels:
+    app: {{ .name }}
+    kuadrant.io/apikey: "true"
+    authorino.kuadrant.io/managed-by: authorino
+    app.kubernetes.io/part-of: kuadrant-console-demo
+type: Opaque
+stringData:
+  api_key: demo-{{ .name }}-key
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .name }}-free-key
+  namespace: kuadrant-console-demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+    secret.kuadrant.io/plan-id: free
+  labels:
+    app: {{ .name }}
+    kuadrant.io/apikey: "true"
+    authorino.kuadrant.io/managed-by: authorino
+    app.kubernetes.io/part-of: kuadrant-console-demo
+type: Opaque
+stringData:
+  api_key: demo-{{ .name }}-free-key
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .name }}-pro-key
+  namespace: kuadrant-console-demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+    secret.kuadrant.io/plan-id: pro
+  labels:
+    app: {{ .name }}
+    kuadrant.io/apikey: "true"
+    authorino.kuadrant.io/managed-by: authorino
+    app.kubernetes.io/part-of: kuadrant-console-demo
+type: Opaque
+stringData:
+  api_key: demo-{{ .name }}-pro-key
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ .name }}-route
+  namespace: kuadrant-console-demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+  labels:
+    app.kubernetes.io/part-of: kuadrant-console-demo
+    app.kubernetes.io/name: {{ .name }}
+spec:
+  parentRefs:
+    - name: demo-gateway
+      namespace: kuadrant-console-demo
+  hostnames:
+    - kuadrant-demo.{{ $domain }}
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ .pathPrefix | quote }}
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: {{ .backendPath | default "/api/v1/customers" | quote }}
+      backendRefs:
+        - name: {{ .name }}
+          port: 8080
+---
+apiVersion: kuadrant.io/v1
+kind: AuthPolicy
+metadata:
+  name: {{ .name }}-auth
+  namespace: kuadrant-console-demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+  labels:
+    app.kubernetes.io/part-of: kuadrant-console-demo
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: {{ .name }}-route
+  defaults:
+    strategy: atomic
+    rules:
+      authentication:
+        api-key-auth:
+          apiKey:
+            allNamespaces: true
+            selector:
+              matchLabels:
+                app: {{ .name }}
+                kuadrant.io/apikey: "true"
+          credentials:
+            customHeader:
+              name: X-API-Key
+          metrics: false
+          priority: 0
+      response:
+        success: {}
+        unauthenticated:
+          body:
+            value: '{"error":"Invalid or missing API key. Include header X-API-Key with a valid key."}'
+          code: 401
+          headers:
+            content-type:
+              value: application/json
+---
+apiVersion: kuadrant.io/v1
+kind: RateLimitPolicy
+metadata:
+  name: {{ .name }}-ratelimit
+  namespace: kuadrant-console-demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+  labels:
+    app.kubernetes.io/part-of: kuadrant-console-demo
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: {{ .name }}-route
+  limits:
+    "global-ceiling":
+      rates:
+        - limit: 100
+          window: 1m
+---
+apiVersion: extensions.kuadrant.io/v1alpha1
+kind: PlanPolicy
+metadata:
+  name: {{ .name }}-plans
+  namespace: kuadrant-console-demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+  labels:
+    app.kubernetes.io/part-of: kuadrant-console-demo
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: {{ .name }}-route
+  plans:
+    - tier: free
+      predicate: |
+        has(auth.identity) && auth.identity.metadata.annotations["secret.kuadrant.io/plan-id"] == "free"
+      limits:
+        daily: 100
+        custom:
+          - limit: 10
+            window: "1m"
+    - tier: basic
+      predicate: |
+        has(auth.identity) && auth.identity.metadata.annotations["secret.kuadrant.io/plan-id"] == "basic"
+      limits:
+        daily: 1000
+        custom:
+          - limit: 60
+            window: "1m"
+    - tier: pro
+      predicate: |
+        has(auth.identity) && auth.identity.metadata.annotations["secret.kuadrant.io/plan-id"] == "pro"
+      limits:
+        daily: 10000
+        custom:
+          - limit: 300
+            window: "1m"
+---
+apiVersion: devportal.kuadrant.io/v1alpha1
+kind: APIProduct
+metadata:
+  name: {{ .name }}
+  namespace: kuadrant-console-demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+    backstage.io/owner: group:default/platform-engineering
+  labels:
+    app.kubernetes.io/part-of: kuadrant-console-demo
+    app.kubernetes.io/name: {{ .name }}
+spec:
+  displayName: {{ .displayName | quote }}
+  description: |
+    {{ .description }}
+    Exposed via Connectivity Link (Gateway API + Kuadrant) for Kuadrant Console demos.
+    Path prefix: {{ .pathPrefix }}
+  version: "v1"
+  publishStatus: Published
+  approvalMode: automatic
+  tags:
+{{- range .tags }}
+    - {{ . }}
+{{- end }}
+    - kuadrant-console-demo
+  contact:
+    team: Platform Engineering
+    email: platform@redhat.local
+  documentation:
+    openAPISpecURL: "https://{{ .name }}-mock.{{ $domain }}/q/openapi"
+    swaggerUI: "https://microcks.{{ $domain }}"
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: {{ .name }}-route
+{{- end }}
+{{- if .Values.tlsPolicy | default false }}
+---
+apiVersion: kuadrant.io/v1
+kind: TLSPolicy
+metadata:
+  name: demo-gateway-tls
+  namespace: kuadrant-console-demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+  labels:
+    app.kubernetes.io/part-of: kuadrant-console-demo
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: Gateway
+    name: demo-gateway
+  issuerRef:
+    group: cert-manager.io
+    kind: ClusterIssuer
+    name: {{ .Values.tlsPolicyIssuer | default "selfsigned-cluster-issuer" }}
+{{- end }}
+{{- if .Values.dnsPolicy | default false }}
+---
+apiVersion: kuadrant.io/v1
+kind: DNSPolicy
+metadata:
+  name: demo-gateway-dns
+  namespace: kuadrant-console-demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+  labels:
+    app.kubernetes.io/part-of: kuadrant-console-demo
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: Gateway
+    name: demo-gateway
+  providerRefs:
+    - name: {{ .Values.dnsProviderSecret | default "dns-provider-credentials" }}
+  routingStrategy: simple
+{{- end }}
+{{/* TokenRateLimitPolicy requires backends that return /usage/total_tokens
+     in response JSON (LLM APIs). Disabled for mock backends — enable when
+     fronting a real LLM endpoint.
+{{- if .Values.tokenRateLimitPolicy | default false }}
+{{- $firstApi := index .Values.apis 0 }}
+---
+apiVersion: kuadrant.io/v1alpha1
+kind: TokenRateLimitPolicy
+metadata:
+  name: {{ $firstApi.name }}-token-ratelimit
+  namespace: kuadrant-console-demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+  labels:
+    app.kubernetes.io/part-of: kuadrant-console-demo
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: {{ $firstApi.name }}-route
+  limits:
+    token-budget:
+      rates:
+        - limit: 5000
+          window: 1h
+{{- end }}
+*/}}

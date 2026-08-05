@@ -287,6 +287,15 @@ connectivityLink:
       prune: true
       selfHeal: true
       skipDryRunOnMissingResource: true
+    # Sample Gateways/HTTPRoutes/APIProducts for Kuadrant Console demos (mock-apis backends)
+    - id: kuadrant-console-demo
+      enabled: true
+      path: kuadrant-console-demo
+      destinationNamespace: kuadrant-console-demo
+      syncWave: "9"
+      prune: true
+      selfHeal: true
+      skipDryRunOnMissingResource: true
     - id: microcks
       enabled: true
       path: microcks
@@ -516,6 +525,9 @@ connectivityLink:
           name: custom-rhcl-console-config
           grafanaNamespace: openshift-cluster-observability-operator
           grafanaRouteName: grafana-observability-route
+          tempoNamespace: openshift-tempo
+          tempoGatewayRouteName: tempo-connectivity-link-jaegerui
+          tempoStackName: connectivity-link
           developerHubUrl: "https://backstage-developer-hub-developer-hub.{{ .Values.deployer.domain }}"
         dnsProber:
           enabled: true
@@ -533,15 +545,16 @@ connectivityLink:
 # ============================================================
 litemaas:
   enabled: true
+  # apiKey injected by RHDP / Argo valuesObject — never commit real keys
   apiKey: ""
   apiUrl: "https://maas-rhdp.apps.maas.redhatworkshops.io/v1"
-  model: "llama-scout-17b"
+  model: "qwen3-14b"
 
 # Legacy aliases — prefer litemaas.*; kept as fallbacks for older overlays
 maas:
   apiKey: ""
   endpoint: "https://maas-rhdp.apps.maas.redhatworkshops.io/v1"
-  model: "llama-scout-17b"
+  model: "qwen3-14b"
 
 # Lightspeed OLS — derived from litemaas when present (see connectivity-link-applications.yaml)
 lightspeed:

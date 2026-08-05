@@ -583,6 +583,56 @@ spec:
   distributedTracing:
     timeout: 30s
 ---
+apiVersion: opentelemetry.io/v1beta1
+kind: OpenTelemetryCollector
+metadata:
+  name: connectivity-link-collector
+  namespace: openshift-opentelemetry
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+spec:
+  mode: deployment
+  volumeMounts:
+    - name: service-ca
+      mountPath: /var/run/secrets/service-ca
+      readOnly: true
+  volumes:
+    - name: service-ca
+      configMap:
+        name: openshift-service-ca.crt
+  config:
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+    processors:
+      batch:
+        timeout: 5s
+        send_batch_size: 1024
+    extensions:
+      bearertokenauth:
+        filename: /var/run/secrets/kubernetes.io/serviceaccount/token
+    exporters:
+      otlp/tempo:
+        endpoint: tempo-connectivity-link-gateway.openshift-tempo.svc.cluster.local:4317
+        tls:
+          insecure: false
+          ca_file: /var/run/secrets/service-ca/service-ca.crt
+        auth:
+          authenticator: bearertokenauth
+        headers:
+          X-Scope-OrgID: dev
+    service:
+      extensions: [bearertokenauth]
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [otlp/tempo]
+---
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDatasource
 metadata:

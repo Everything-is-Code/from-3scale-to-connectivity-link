@@ -103,7 +103,7 @@ connectivityLink:
       selfHeal: true
       skipDryRunOnMissingResource: true
     - id: workshop-registration
-      enabled: false
+      enabled: true
       path: workshop-registration
       destinationNamespace: showroom
       syncWave: "10"

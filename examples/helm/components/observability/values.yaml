@@ -1,3 +1,0 @@
-# Vendored from https://gitlab.com/Everything-is-Code/connectivity-link (observability)
-enabled: true
-clusterDomain: "apps.cluster.example.com"

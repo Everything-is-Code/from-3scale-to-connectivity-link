@@ -1,8 +1,0 @@
-site_name: Mailpit — Email Testing
-site_description: Mailpit SMTP testing tool for Developer Hub notifications
-nav:
-  - Home: index.md
-  - API Reference: api.md
-  - Integration: integration.md
-plugins:
-  - techdocs-core

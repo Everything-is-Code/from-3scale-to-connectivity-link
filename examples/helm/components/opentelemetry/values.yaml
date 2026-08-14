@@ -1,3 +1,0 @@
-# Vendored from https://gitlab.com/Everything-is-Code/connectivity-link (opentelemetry)
-enabled: true
-clusterDomain: "apps.cluster.example.com"

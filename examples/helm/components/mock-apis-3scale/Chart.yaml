@@ -1,6 +1,0 @@
-apiVersion: v2
-name: mock-apis-3scale
-description: Fleet of mock microservices registered in 3scale for large-scale migration demo
-type: application
-version: 0.1.0
-appVersion: "1.0.0"

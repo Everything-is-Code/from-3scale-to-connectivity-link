@@ -1,7 +1,0 @@
-enabled: true
-clusterDomain: ""
-
-operator:
-  channel: stable
-  source: redhat-operators
-  installPlanApproval: Automatic

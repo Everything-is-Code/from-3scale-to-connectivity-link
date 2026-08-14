@@ -1,6 +1,0 @@
-apiVersion: v2
-name: enterprise-apis-3scale
-description: 3scale API portfolio for 50 user namespaces with Microcks-backed mocks for large-scale GateForge migration demo
-type: application
-version: 0.2.0
-appVersion: "1.0.0"

@@ -1,3 +1,0 @@
-# Vendored from https://gitlab.com/Everything-is-Code/connectivity-link (kiali)
-enabled: true
-clusterDomain: "apps.cluster.example.com"

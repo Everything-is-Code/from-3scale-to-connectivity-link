@@ -1,2 +1,0 @@
-clusterDomain: apps.cluster.example.com
-microcksUrl: http://microcks.microcks.svc.cluster.local:8080

@@ -1,6 +1,0 @@
-apiVersion: v2
-name: apicast-scenarios
-description: 4 APICast self-managed and multi-tenant scenarios for GateForge APICast discovery demo
-type: application
-version: 0.1.0
-appVersion: "1.0.0"

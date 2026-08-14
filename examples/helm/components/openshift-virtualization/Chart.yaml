@@ -1,6 +1,0 @@
-apiVersion: v2
-name: openshift-virtualization
-description: Installs OpenShift Virtualization (CNV) operator and HyperConverged CR
-type: application
-version: 0.1.0
-appVersion: "4.17"

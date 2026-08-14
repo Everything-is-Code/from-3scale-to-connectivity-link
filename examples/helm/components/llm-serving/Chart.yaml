@@ -1,5 +1,0 @@
-apiVersion: v2
-name: llm-serving
-description: LLM serving with llama.cpp on CPU (KServe InferenceService for RHOAI)
-version: 0.1.0
-type: application

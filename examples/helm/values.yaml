@@ -26,56 +26,7 @@ connectivityLink:
   operators:
     channel: stable-4.20
     version: 4.20.4
-    # servicemeshoperator3: templates/servicemeshoperator3.yaml (omit here to avoid duplicate)
-    subscriptions:
-      - name: cluster-observability-operator
-        namespace: openshift-cluster-observability-operator
-        channel: stable
-        source: redhat-operators
-      - name: grafana-operator
-        namespace: openshift-operators
-        channel: v5
-        source: community-operators
-      - name: kiali-ossm
-        namespace: openshift-operators
-        channel: stable
-        source: redhat-operators
-
-  # neuralbank-stack — Keycloak URLs derived from deployer.domain when synced
-  neuralbank:
-    global:
-      postgresql:
-        auth:
-          postgresPassword: "supersecretpassword"
-          username: "neuralbank"
-          password: "neuralbank123!"
-          database: "neuralbank"
-    backend:
-      image:
-        repository: quay.io/everythingascode/neuralbank-backend
-        tag: "latest"
-        pullPolicy: Always
-      service:
-        port: 8080
-      replicaCount: 1
-    frontend:
-      image:
-        repository: quay.io/everythingascode/neuralbank-front
-        tag: "pkce"
-        pullPolicy: Always
-      service:
-        port: 8080
-      replicaCount: 1
-    keycloak:
-      clientId: "neuralbank-frontend"
-      clientSecret: ""
-      issuerUrl: ""
-      authorizationEndpoint: ""
-      redirectUri: ""
-      tokenEndpoint: ""
-      postLogoutRedirectUri: ""
-    api:
-      baseUrl: "/api"
+    subscriptions: []
 
   # Argo CD Applications (order via sync-wave on Application metadata)
   apps:
@@ -103,14 +54,6 @@ connectivityLink:
       prune: true
       selfHeal: true
       skipDryRunOnMissingResource: true
-    - id: openshift-virtualization
-      enabled: false
-      path: openshift-virtualization
-      destinationNamespace: openshift-cnv
-      syncWave: "3"
-      prune: true
-      selfHeal: true
-      skipDryRunOnMissingResource: true
     - id: connectivity-link-servicemeshoperator3
       enabled: true
       path: servicemeshoperator3
@@ -127,107 +70,11 @@ connectivityLink:
       prune: true
       selfHeal: true
       skipDryRunOnMissingResource: true
-    - id: connectivity-link-developer-hub
-      enabled: false
-      path: developer-hub
-      destinationNamespace: developer-hub
-      syncWave: "3"
-      prune: true
-      selfHeal: true
-      skipDryRunOnMissingResource: true
     - id: connectivity-link-rhcl-operator
       enabled: true
       path: rhcl-operator
       destinationNamespace: kuadrant-system
       syncWave: "6"
-      prune: true
-      selfHeal: true
-      skipDryRunOnMissingResource: true
-    - id: connectivity-link-observability
-      enabled: false
-      path: observability
-      destinationNamespace: openshift-cluster-observability-operator
-      syncWave: "5"
-      prune: true
-      selfHeal: true
-      skipDryRunOnMissingResource: true
-    - id: connectivity-link-kiali
-      enabled: false
-      path: kiali
-      destinationNamespace: openshift-cluster-observability-operator
-      syncWave: "6"
-      prune: true
-      selfHeal: true
-      skipDryRunOnMissingResource: true
-    - id: connectivity-link-opentelemetry
-      enabled: false
-      path: opentelemetry
-      destinationNamespace: openshift-opentelemetry
-      syncWave: "6"
-      prune: true
-      selfHeal: true
-      skipDryRunOnMissingResource: true
-    - id: connectivity-link-openshift-ai
-      enabled: false
-      path: openshift-ai
-      destinationNamespace: openshift-ai
-      syncWave: "6"
-      prune: true
-      selfHeal: true
-      skipDryRunOnMissingResource: true
-    - id: connectivity-link-devspaces
-      enabled: false
-      path: devspaces
-      destinationNamespace: devspaces
-      syncWave: "7"
-      prune: false
-      selfHeal: true
-      skipDryRunOnMissingResource: true
-    - id: llm-serving
-      enabled: false
-      path: llm-serving
-      destinationNamespace: openshift-ai-models
-      syncWave: "7"
-      prune: true
-      selfHeal: true
-      skipDryRunOnMissingResource: true
-    - id: connectivity-link-neuralbank-stack
-      enabled: false  # Demo app — enable when needed for testing
-      path: neuralbank-stack
-      destinationNamespace: neuralbank-stack
-      syncWave: "5"
-      prune: true
-      selfHeal: true
-      skipDryRunOnMissingResource: true
-    - id: ols
-      enabled: false
-      path: openshift-lightspeed
-      destinationNamespace: openshift-lightspeed
-      syncWave: "8"
-      prune: true
-      selfHeal: true
-      skipDryRunOnMissingResource: true
-    - id: mcp-gateway
-      enabled: false
-      path: mcp-gateway
-      destinationNamespace: mcp-system
-      syncWave: "9"
-      prune: true
-      selfHeal: true
-      skipDryRunOnMissingResource: true
-    - id: gitea
-      enabled: false
-      path: gitea
-      destinationNamespace: gitea
-      syncWave: "3"
-      prune: true
-      selfHeal: true
-      skipDryRunOnMissingResource: false
-    - id: connectivity-link-applicationsets
-      enabled: false
-      path: applicationsets
-      destinationNamespace: openshift-gitops
-      syncWave: "4"
       prune: true
       selfHeal: true
       skipDryRunOnMissingResource: true
@@ -247,76 +94,11 @@ connectivityLink:
       prune: true
       selfHeal: true
       skipDryRunOnMissingResource: true
-    - id: connectivity-link-nfl-wallet
-      enabled: false  # Demo app — enable when needed for testing
-      path: nfl-wallet
-      destinationNamespace: nfl-wallet-prod
-      syncWave: "7"
-      prune: true
-      selfHeal: true
-      skipDryRunOnMissingResource: true
     - id: 3scale-operator
       enabled: true
       path: 3scale-operator
       destinationNamespace: 3scale-system
       syncWave: "3"
-      prune: true
-      selfHeal: true
-      skipDryRunOnMissingResource: true
-    - id: neuralbank-3scale
-      enabled: false  # Demo app — enable when needed for testing
-      path: neuralbank-3scale
-      destinationNamespace: neuralbank-3scale
-      syncWave: "6"
-      prune: true
-      selfHeal: true
-      skipDryRunOnMissingResource: true
-    - id: nfl-wallet-3scale
-      enabled: false  # Demo app — enable when needed for testing
-      path: nfl-wallet-3scale
-      destinationNamespace: nfl-wallet-3scale
-      syncWave: "7"
-      prune: true
-      selfHeal: true
-      skipDryRunOnMissingResource: true
-    - id: mock-apis-3scale
-      enabled: false  # Demo app — enable when needed for testing
-      path: mock-apis-3scale
-      destinationNamespace: mock-apis-3scale
-      syncWave: "8"
-      prune: true
-      selfHeal: true
-      skipDryRunOnMissingResource: true
-    # Sample Gateways/HTTPRoutes/APIProducts for Kuadrant Console demos (mock-apis backends)
-    - id: kuadrant-console-demo
-      enabled: false  # Demo app — enable when needed for testing
-      path: kuadrant-console-demo
-      destinationNamespace: kuadrant-console-demo
-      syncWave: "9"
-      prune: true
-      selfHeal: true
-      skipDryRunOnMissingResource: true
-    - id: microcks
-      enabled: false
-      path: microcks
-      destinationNamespace: microcks
-      syncWave: "8"
-      prune: true
-      selfHeal: true
-      skipDryRunOnMissingResource: true
-    - id: enterprise-apis-3scale
-      enabled: false  # Demo app — enable when needed for testing
-      path: enterprise-apis-3scale
-      destinationNamespace: user1-neuralbank
-      syncWave: "9"
-      prune: true
-      selfHeal: true
-      skipDryRunOnMissingResource: true
-    - id: apicast-scenarios
-      enabled: false  # Demo app — enable when needed for testing
-      path: apicast-scenarios
-      destinationNamespace: apicast-scenario-1
-      syncWave: "9"
       prune: true
       selfHeal: true
       skipDryRunOnMissingResource: true
@@ -334,20 +116,6 @@ connectivityLink:
 # These install third-party charts from external Helm repos
 # ============================================================
   helmApps:
-    - id: gitea
-      enabled: false
-      repoURL: "https://dl.gitea.com/charts/"
-      chart: gitea
-      targetRevision: "12.5.0"
-      destinationNamespace: gitea
-      syncWave: "3"
-    - id: openshift-mcp-server
-      enabled: false
-      repoURL: "https://everything-is-code.github.io/openshift-mcp-server"
-      chart: openshift-mcp-server
-      targetRevision: "0.1.0-alpha"
-      destinationNamespace: openshift-lightspeed
-      syncWave: "8"
     - id: microcks-operator
       enabled: false
       repoURL: "https://github.com/microcks/microcks-operator"
@@ -411,55 +179,14 @@ connectivityLink:
             host: "dns-prober-custom-rhcl-console.{{ .Values.deployer.domain }}"
 
 # ============================================================
-# LiteMaaS / MaaS — single LLM source (RHDP injects apiKey; never commit real keys)
-# Consumers: OLS, Developer Hub Lightspeed, openshift-mcp-server, ApiShift
-# ============================================================
-litemaas:
-  enabled: false
-  apiKey: ""
-  apiUrl: ""
-  model: ""
-
-maas:
-  apiKey: ""
-  endpoint: ""
-  model: ""
-
-lightspeed:
-  llmApiKey: ""
-  llmEndpoint: ""
-
-# ============================================================
-# User Scaling — single parameter controls all user provisioning
-# Keycloak users, DevSpaces namespaces, RBAC policy, workshop registration
-# Recommended: 30 (small), 50 (medium), 100 (large), 200 (extra-large)
-# See README.md "Cluster Sizing" for node/resource recommendations
+# User Scaling
 # ============================================================
 userCount: 10
 
 # ============================================================
-# Workshop Registration Portal
-# ============================================================
-workshopRegistration:
-  adminToken: "workshop-admin-2024"
-  keycloakAdminPassword: ""
-
-# ============================================================
-# Components - Enable/disable and configure each component
+# Components
 # ============================================================
 components:
-
-  # --- Hello World Demo Application ---
-  helloWorld:
-    enabled: false
-    namespace: terminal-demo
-    appName: hello-world
-    replicas: 1
-    image: registry.redhat.io/ubi8/httpd-24:latest
-    userInfo:
-      enabled: true
-      title: "Web Terminal Demo"
-      instructions: "Access the Showroom lab guide, then click the terminal icon (>_) in the OpenShift console."
 
   # --- Showroom Lab Guide ---
   showroom:

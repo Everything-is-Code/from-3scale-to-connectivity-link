@@ -1,4 +1,0 @@
-clusterDomain: ""
-llmApiKey: "sk-no-key"
-llmEndpoint: "http://granite-3-2-8b-instruct-metrics.openshift-ai-models.svc.cluster.local:8080/v1"
-llmModel: "qwen2.5-3b-instruct-q4_k_m.gguf"

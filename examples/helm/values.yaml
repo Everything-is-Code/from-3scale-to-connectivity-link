@@ -184,6 +184,13 @@ connectivityLink:
 userCount: 10
 
 # ============================================================
+# Workshop Registration Portal
+# ============================================================
+workshopRegistration:
+  adminToken: "workshop-admin-2024"
+  keycloakAdminPassword: ""
+
+# ============================================================
 # Components
 # ============================================================
 components:

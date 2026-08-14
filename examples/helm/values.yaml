@@ -195,6 +195,17 @@ workshopRegistration:
 # ============================================================
 components:
 
+  helloWorld:
+    enabled: false
+    namespace: terminal-demo
+    appName: hello-world
+    replicas: 1
+    image: registry.redhat.io/ubi8/httpd-24:latest
+    userInfo:
+      enabled: false
+      title: ""
+      instructions: ""
+
   # --- Showroom Lab Guide ---
   showroom:
     enabled: true

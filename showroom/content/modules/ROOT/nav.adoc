@@ -1,4 +1,5 @@
 * xref:index.adoc[Home]
+* xref:00a-access-info.adoc[Access Information]
 . Fundamentals
 * xref:00-prerequisites.adoc[0. Prerequisites & Sizing]
 * xref:01-migration-overview.adoc[1. Migration Overview]

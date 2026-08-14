@@ -80,11 +80,16 @@ Your credentials:
 * *Username*: `{user_name}`
 * *Password*: `{user_password}`
 
+[IMPORTANT]
+====
+For *3scale Admin Portal*, *ArgoCD*, *Keycloak*, and other console credentials, see the **xref:00a-access-info.adoc[Access Information]** page. It includes the 3scale access token needed by the Migration Toolkit and APIShift.
+====
+
 Cluster sizing and recommended profiles: xref:00-prerequisites.adoc[0. Prerequisites & Sizing].
 
 IMPORTANT: Treat `{user_name}` / `{user_password}` as lab-only accounts. Rotate or discard them after the session.
 
-For *non-OAuth* admin consoles (Argo CD, Grafana, Gitea, Keycloak, 3scale, APIShift, Migration Toolkit), print URLs and secrets from a machine with `oc` access:
+For a full dump of all URLs and passwords from the terminal:
 
 ----
 ./scripts/get-credentials.sh
@@ -92,17 +97,20 @@ For *non-OAuth* admin consoles (Argo CD, Grafana, Gitea, Keycloak, 3scale, APISh
 
 == Workshop platform links
 
-Strategy entry points first; then supporting platform tools.
+Strategy entry points first; then supporting platform tools. Full credentials on the **xref:00a-access-info.adoc[Access Information]** page.
 
 [cols="1,3",options="header"]
 |===
 | Tool | URL
 
-| *Developer Hub* (Golden Path)
-| https://backstage-developer-hub-developer-hub.{cluster_domain}
+| *OpenShift Console*
+| https://console-openshift-console.{cluster_domain}
+
+| *3scale Admin Portal*
+| https://3scale-admin.{cluster_domain}
 
 | *Kuadrant Console* (day-2)
-| OpenShift Console → *Connectivity Link* plugin — https://console-openshift-console.{cluster_domain}
+| OpenShift Console → *Connectivity Link* plugin
 
 | *Migration Toolkit*
 | https://migration-toolkit.{cluster_domain}
@@ -110,29 +118,15 @@ Strategy entry points first; then supporting platform tools.
 | *APIShift*
 | https://gateforge-gateforge.{cluster_domain}
 
-| *Gitea*
-| https://gitea-gitea.{cluster_domain}
-
 | *ArgoCD*
 | https://openshift-gitops-server-openshift-gitops.{cluster_domain}
 
 | *Keycloak*
 | https://rhbk.{cluster_domain}/admin/master/console
 
-| *Grafana*
-| https://grafana-observability.{cluster_domain}
-
-| *Kiali*
-| https://kiali-openshift-cluster-observability-operator.{cluster_domain}
-
-| *Mailpit*
-| https://n8n-mailpit-openshift-lightspeed.{cluster_domain}
-
-| *OpenShift Console*
-| https://console-openshift-console.{cluster_domain}
+| *Showroom*
+| https://showroom-showroom.{cluster_domain}
 |===
-
-WARNING: Prefer the showroom *Terminal* tab for `oc` / `curl` (`/terminal/`). The *Developer Hub* tab embeds Backstage in an iframe — OIDC login often fails inside that frame. If the panel is blank or stuck on login, open Developer Hub in a *new browser tab* from the links table above.
 
 == Workshop flow
 

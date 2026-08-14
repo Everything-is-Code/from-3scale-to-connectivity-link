@@ -1,0 +1,118 @@
+= Access Information
+
+[.lead]
+Quick reference for all console URLs, credentials, and tokens in this workshop environment.
+
+== OpenShift
+
+[cols="1,3",options="header"]
+|===
+| Field | Value
+
+| *Console URL*
+| https://console-openshift-console.{cluster_domain}
+
+| *API URL*
+| `https://api.{cluster_domain}:6443` (replace `apps.` with `api.` and append `:6443`)
+
+| *Username*
+| `{user_name}`
+
+| *Password*
+| `{user_password}`
+|===
+
+== 3scale Admin Portal
+
+[cols="1,3",options="header"]
+|===
+| Field | Value
+
+| *Admin Portal URL*
+| https://3scale-admin.{cluster_domain}
+
+| *Admin User*
+| `admin` (default from `system-seed` secret)
+
+| *Admin Password*
+| Retrieve from the cluster — see command below
+
+| *Admin Access Token*
+| Retrieve from the cluster — see command below
+|===
+
+Retrieve the 3scale admin credentials from the Showroom terminal (or any `oc` session):
+
+[source,bash]
+----
+# Admin password
+oc get secret system-seed -n 3scale-system \
+  -o jsonpath='{.data.ADMIN_PASSWORD}' | base64 -d && echo
+
+# Admin access token (used by Migration Toolkit, APIShift, and API calls)
+oc get secret system-seed -n 3scale-system \
+  -o jsonpath='{.data.ADMIN_ACCESS_TOKEN}' | base64 -d && echo
+----
+
+TIP: The access token is what you paste into the *Migration Toolkit* and *APIShift* connection forms. Copy it once and reuse it throughout the workshop.
+
+== ArgoCD
+
+[cols="1,3",options="header"]
+|===
+| Field | Value
+
+| *URL*
+| https://openshift-gitops-server-openshift-gitops.{cluster_domain}
+
+| *Username*
+| `admin`
+
+| *Password*
+| Retrieve with: `oc extract secret/openshift-gitops-cluster -n openshift-gitops --keys=admin.password --to=-`
+|===
+
+== Keycloak (RHBK)
+
+[cols="1,3",options="header"]
+|===
+| Field | Value
+
+| *URL*
+| https://rhbk.{cluster_domain}/admin/master/console
+
+| *Username / Password*
+| Retrieve with: `oc extract secret/keycloak-initial-admin -n rhbk-operator --keys=username,password --to=-`
+|===
+
+== Migration Tools
+
+[cols="1,2,2",options="header"]
+|===
+| Tool | URL | Notes
+
+| *Migration Toolkit RHCL*
+| https://migration-toolkit.{cluster_domain}
+| Paste the 3scale Admin URL and Access Token in the connection form
+
+| *APIShift*
+| https://gateforge-gateforge.{cluster_domain}
+| Same 3scale token; adds AI assist
+
+| *Kuadrant Console*
+| OpenShift Console -> Connectivity Link plugin
+| Day-2 operations after migration
+|===
+
+== All credentials at once
+
+For a complete dump of all URLs and passwords, run from the Showroom terminal:
+
+[source,bash]
+----
+cd /tmp
+git clone https://github.com/Everything-is-Code/from-3scale-to-connectivity-link.git repo 2>/dev/null || true
+bash repo/scripts/get-credentials.sh
+----
+
+This script prints every console URL, user, password, and token in the environment.

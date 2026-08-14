@@ -285,7 +285,7 @@ data:
     </div>
     <div class="main">
       <div class="card" id="register-card">
-        <div style="text-align:center;margin-bottom:24px"><img src="https://raw.githubusercontent.com/maximilianoPizarro/from-3scale-to-connectivity-link/main/docs/assets/images/kuadrant-logo.svg" alt="Kuadrant — From 3scale to Connectivity Link" style="height:60px"></div>
+        <div style="text-align:center;margin-bottom:24px"><img src="https://raw.githubusercontent.com/Everything-is-Code/from-3scale-to-connectivity-link/main/docs/assets/images/kuadrant-logo.svg" alt="Kuadrant — From 3scale to Connectivity Link" style="height:60px"></div>
         <h2>Workshop Registration</h2>
         <p>Enter your email to get started. You will be automatically assigned a workshop user and redirected to the lab environment.</p>
         <div class="form-group">

@@ -1,6 +1,0 @@
-site_name: ${{ values.vmName }}
-site_description: ${{ values.description }}
-nav:
-  - Home: index.md
-plugins:
-  - techdocs-core

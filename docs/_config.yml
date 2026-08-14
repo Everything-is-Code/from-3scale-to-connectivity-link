@@ -1,7 +1,7 @@
 title: "From Zero To Hero with Red Hat Developer Hub"
 description: "Workshop — Neuralbank on OpenShift — Red Hat Developer Hub"
 baseurl: "/from-3scale-to-connectivity-link"
-url: "https://maximilianopizarro.github.io"
+url: "https://everything-is-code.github.io"
 remote_theme: just-the-docs/just-the-docs@v0.10.0
 color_scheme: custom
 logo: "/assets/images/kuadrant-logo.svg"
@@ -10,10 +10,10 @@ aux_links:
   "Red Hat Developers":
     - "https://developers.redhat.com"
   "GitHub":
-    - "https://github.com/maximilianoPizarro/from-3scale-to-connectivity-link"
+    - "https://github.com/Everything-is-Code/from-3scale-to-connectivity-link"
 aux_links_new_tab: true
 
-footer_content: '<img src="/from-3scale-to-connectivity-link/assets/images/kuadrant-logo.svg" alt="Kuadrant" style="height:24px;vertical-align:middle;margin-right:6px;">From 3scale to Connectivity Link — Created by <a href="https://maximilianopizarro.github.io/" target="_blank">Maximiliano Pizarro</a> · Powered by <a href="https://developers.redhat.com/rhdh" target="_blank">Red Hat Developer Hub</a>'
+footer_content: '<img src="/from-3scale-to-connectivity-link/assets/images/kuadrant-logo.svg" alt="Kuadrant" style="height:24px;vertical-align:middle;margin-right:6px;">From 3scale to Connectivity Link — Created by <a href="https://everything-is-code.github.io/" target="_blank">Everything-is-Code</a> · Powered by <a href="https://developers.redhat.com/rhdh" target="_blank">Red Hat Developer Hub</a>'
 
 favicon_ico: "/from-3scale-to-connectivity-link/assets/images/favicon.ico"
 

@@ -36,7 +36,7 @@ spec:
     spec:
       containers:
       - name: nfl-wallet-api
-        image: quay.io/maximilianopizarro/neuralbank-backend:latest
+        image: quay.io/everythingascode/neuralbank-backend:latest
         ports:
         - containerPort: 8080
           name: http

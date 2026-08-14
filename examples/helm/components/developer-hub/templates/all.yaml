@@ -454,19 +454,19 @@ data:
               initialDelay: { seconds: 15 }
       locations:
         - type: url
-          target: https://github.com/maximilianoPizarro/from-3scale-to-connectivity-link/blob/{{ .Values.gitopsRevision }}/examples/helm/software-templates/templates-catalog.yaml
+          target: https://github.com/Everything-is-Code/from-3scale-to-connectivity-link/blob/{{ .Values.gitopsRevision }}/examples/helm/software-templates/templates-catalog.yaml
         - type: url
-          target: https://github.com/maximilianoPizarro/from-3scale-to-connectivity-link/blob/{{ .Values.gitopsRevision }}/examples/helm/components/connectivity-link-neuralbank-stack/catalog-info.yaml
+          target: https://github.com/Everything-is-Code/from-3scale-to-connectivity-link/blob/{{ .Values.gitopsRevision }}/examples/helm/components/connectivity-link-neuralbank-stack/catalog-info.yaml
         - type: url
-          target: https://github.com/maximilianoPizarro/from-3scale-to-connectivity-link/blob/{{ .Values.gitopsRevision }}/examples/helm/components/connectivity-link-nfl-wallet/catalog-info.yaml
+          target: https://github.com/Everything-is-Code/from-3scale-to-connectivity-link/blob/{{ .Values.gitopsRevision }}/examples/helm/components/connectivity-link-nfl-wallet/catalog-info.yaml
         - type: url
-          target: https://github.com/maximilianoPizarro/from-3scale-to-connectivity-link/blob/{{ .Values.gitopsRevision }}/examples/helm/components/connectivity-link-observability/catalog-info.yaml
+          target: https://github.com/Everything-is-Code/from-3scale-to-connectivity-link/blob/{{ .Values.gitopsRevision }}/examples/helm/components/connectivity-link-observability/catalog-info.yaml
         - type: url
-          target: https://github.com/maximilianoPizarro/from-3scale-to-connectivity-link/blob/{{ .Values.gitopsRevision }}/examples/helm/components/connectivity-link-mailpit/catalog-info.yaml
+          target: https://github.com/Everything-is-Code/from-3scale-to-connectivity-link/blob/{{ .Values.gitopsRevision }}/examples/helm/components/connectivity-link-mailpit/catalog-info.yaml
         - type: url
-          target: https://github.com/maximilianoPizarro/from-3scale-to-connectivity-link/blob/{{ .Values.gitopsRevision }}/examples/helm/components/gateforge-migrated/catalog-info.yaml
+          target: https://github.com/Everything-is-Code/from-3scale-to-connectivity-link/blob/{{ .Values.gitopsRevision }}/examples/helm/components/gateforge-migrated/catalog-info.yaml
         - type: url
-          target: https://github.com/maximilianoPizarro/from-3scale-to-connectivity-link/blob/{{ .Values.gitopsRevision }}/examples/helm/components/3scale-catalog/catalog-info.yaml
+          target: https://github.com/Everything-is-Code/from-3scale-to-connectivity-link/blob/{{ .Values.gitopsRevision }}/examples/helm/components/3scale-catalog/catalog-info.yaml
       rules:
         - allow: [Component, Group, User, Resource, Location, Template, API, APIProduct, System, Domain]
     techdocs:
@@ -570,7 +570,7 @@ data:
         policyFileReload: true
         admin:
           users:
-            - name: user:default/maximilianopizarro
+            - name: user:default/everythingascode
             - name: user:default/platformadmin
     enabled:
       kubernetes: true
@@ -802,7 +802,7 @@ data:
                         title: "Documentation & AI"
                         content: |
                           * [Workshop Guide](https://showroom-showroom.{{ .Values.clusterDomain }}) — Showroom
-                          * [GitHub Pages](https://maximilianopizarro.github.io/from-3scale-to-connectivity-link/) — Reference Docs
+                          * [GitHub Pages](https://everything-is-code.github.io/from-3scale-to-connectivity-link/) — Reference Docs
                           * [Lightspeed](/lightspeed) — AI Chat Assistant
                           * [Kuadrant API Management](/kuadrant) — API Products
                   - mountPoint: home.page/cards
@@ -838,9 +838,9 @@ data:
                     frequency: { minutes: 5 }
                     timeout: { minutes: 3 }
                     initialDelay: { seconds: 30 }
-      - package: oci://quay.io/maximilianopizarro/gateforge-devhub-plugin:v0.1.9!gateforge-backstage-plugin-catalog-backend-module-gateforge
+      - package: oci://quay.io/everythingascode/gateforge-devhub-plugin:v0.1.9!gateforge-backstage-plugin-catalog-backend-module-gateforge
         disabled: false
-      - package: oci://quay.io/maximilianopizarro/gateforge-devhub-frontend-plugin:v0.1.9!gateforge-backstage-plugin-gateforge-frontend
+      - package: oci://quay.io/everythingascode/gateforge-devhub-frontend-plugin:v0.1.9!gateforge-backstage-plugin-gateforge-frontend
         disabled: false
         pluginConfig:
           dynamicPlugins:
@@ -966,10 +966,10 @@ data:
     ROLE ASSIGNMENTS\n# ==========================================================\n#
     Assign users to roles based on their groups\n# Following the pattern: g, user:default/<username>,
     role:default/<rolename>\n\n# Platform Engineers (Full Admin Permissions)\n# Users
-    in infrastructure, platformengineers, and rhdh groups get admin role\ng, user:default/maximilianopizarro,
-    role:default/platformengineer\n# maximilianopizarro: full Kuadrant permissions
-    (api-admin + api-owner for API keys, requests, approval)\ng, user:default/maximilianopizarro,
-    role:default/api-admin\ng, user:default/maximilianopizarro, role:default/api-owner\n\n#
+    in infrastructure, platformengineers, and rhdh groups get admin role\ng, user:default/everythingascode,
+    role:default/platformengineer\n# everythingascode: full Kuadrant permissions
+    (api-admin + api-owner for API keys, requests, approval)\ng, user:default/everythingascode,
+    role:default/api-admin\ng, user:default/everythingascode, role:default/api-owner\n\n#
     platformadmin: full platform engineer permissions\ng, user:default/platformadmin,
     role:default/platformengineer\ng, user:default/platformadmin, role:default/api-admin\ng,
     user:default/platformadmin, role:default/api-owner\ng, user:default/platformadmin,
@@ -1030,8 +1030,8 @@ data:
     Insights permissions for rhdhpai-users\np, role:default/rhdhpai-users, adoption-insights.events.read,
     read, allow\n\n# If you still need 'template-executers' for other users, keep
     its definition:\np, role:default/template-executers, scaffolder.action.execute,
-    use, allow\n\ng, user:default/maximilianopizarro, role:default/rhdhpai-users\ng,
-    user:default/maximilianopizarro, role:default/template-executers"
+    use, allow\n\ng, user:default/everythingascode, role:default/rhdhpai-users\ng,
+    user:default/everythingascode, role:default/template-executers"
 kind: ConfigMap
 metadata:
   annotations:

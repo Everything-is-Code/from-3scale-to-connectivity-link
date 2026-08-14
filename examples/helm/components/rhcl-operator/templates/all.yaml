@@ -371,7 +371,7 @@ spec:
   documentation:
     openAPISpecURL: "https://neuralbank.{{ .Values.clusterDomain }}/q/openapi"
     swaggerUI: "https://neuralbank.{{ .Values.clusterDomain }}/q/swagger-ui"
-    gitRepository: "https://github.com/maximilianoPizarro/from-3scale-to-connectivity-link"
+    gitRepository: "https://github.com/Everything-is-Code/from-3scale-to-connectivity-link"
   targetRef:
     group: gateway.networking.k8s.io
     kind: HTTPRoute

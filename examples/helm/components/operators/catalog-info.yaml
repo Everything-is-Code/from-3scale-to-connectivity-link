@@ -7,7 +7,7 @@ metadata:
     argocd/app-name: operators
     argocd/app-namespace: openshift-gitops
     # ArgoCD URL resolved automatically by the ArgoCD plugin in Developer Hub
-    gitlab.com/project-slug: maximilianoPizarro/connectivity-link
+    gitlab.com/project-slug: Everything-is-Code/connectivity-link
   tags:
     - operators
     - helm
@@ -16,7 +16,7 @@ metadata:
 spec:
   type: service
   lifecycle: production
-  owner: maximilianopizarro
+  owner: everythingascode
   system: operator-platform
 
 ---
@@ -31,7 +31,7 @@ metadata:
 spec:
   type: service
   lifecycle: production
-  owner: maximilianopizarro
+  owner: everythingascode
   system: operator-platform
 
 ---
@@ -46,7 +46,7 @@ metadata:
 spec:
   type: service
   lifecycle: production
-  owner: maximilianopizarro
+  owner: everythingascode
   system: operator-platform
 
 ---
@@ -61,7 +61,7 @@ metadata:
 spec:
   type: service
   lifecycle: production
-  owner: maximilianopizarro
+  owner: everythingascode
   system: operator-platform
 
 ---
@@ -76,7 +76,7 @@ metadata:
 spec:
   type: service
   lifecycle: production
-  owner: maximilianopizarro
+  owner: everythingascode
   system: operator-platform
 
 ---
@@ -91,7 +91,7 @@ metadata:
 spec:
   type: service
   lifecycle: production
-  owner: maximilianopizarro
+  owner: everythingascode
   system: operator-platform
 
 ---
@@ -101,6 +101,6 @@ metadata:
   name: operator-platform
   description: Operator management and lifecycle platform
 spec:
-  owner: maximilianopizarro
+  owner: everythingascode
   domain: platform
 

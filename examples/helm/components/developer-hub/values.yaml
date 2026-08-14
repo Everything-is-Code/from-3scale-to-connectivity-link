@@ -1,4 +1,4 @@
-# Vendored from https://gitlab.com/maximilianoPizarro/connectivity-link (developer-hub)
+# Vendored from https://gitlab.com/Everything-is-Code/connectivity-link (developer-hub)
 enabled: true
 clusterDomain: ""
 gitopsRevision: "main"

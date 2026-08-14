@@ -6,7 +6,7 @@
 # ============================================================
 gitops:
   # Repository containing the component charts (your fork or this template)
-  repoUrl: "https://github.com/maximilianoPizarro/from-3scale-to-connectivity-link.git"
+  repoUrl: "https://github.com/Everything-is-Code/from-3scale-to-connectivity-link.git"
   revision: "main"
   basePath: "examples/helm"
 
@@ -52,7 +52,7 @@ connectivityLink:
           database: "neuralbank"
     backend:
       image:
-        repository: quay.io/maximilianopizarro/neuralbank-backend
+        repository: quay.io/everythingascode/neuralbank-backend
         tag: "latest"
         pullPolicy: Always
       service:
@@ -60,7 +60,7 @@ connectivityLink:
       replicaCount: 1
     frontend:
       image:
-        repository: quay.io/maximilianopizarro/neuralbank-front
+        repository: quay.io/everythingascode/neuralbank-front
         tag: "pkce"
         pullPolicy: Always
       service:
@@ -104,7 +104,7 @@ connectivityLink:
       selfHeal: true
       skipDryRunOnMissingResource: true
     - id: openshift-virtualization
-      enabled: true
+      enabled: false
       path: openshift-virtualization
       destinationNamespace: openshift-cnv
       syncWave: "3"
@@ -128,7 +128,7 @@ connectivityLink:
       selfHeal: true
       skipDryRunOnMissingResource: true
     - id: connectivity-link-developer-hub
-      enabled: true
+      enabled: false
       path: developer-hub
       destinationNamespace: developer-hub
       syncWave: "3"
@@ -144,7 +144,7 @@ connectivityLink:
       selfHeal: true
       skipDryRunOnMissingResource: true
     - id: connectivity-link-observability
-      enabled: true
+      enabled: false
       path: observability
       destinationNamespace: openshift-cluster-observability-operator
       syncWave: "5"
@@ -152,7 +152,7 @@ connectivityLink:
       selfHeal: true
       skipDryRunOnMissingResource: true
     - id: connectivity-link-kiali
-      enabled: true
+      enabled: false
       path: kiali
       destinationNamespace: openshift-cluster-observability-operator
       syncWave: "6"
@@ -160,7 +160,7 @@ connectivityLink:
       selfHeal: true
       skipDryRunOnMissingResource: true
     - id: connectivity-link-opentelemetry
-      enabled: true
+      enabled: false
       path: opentelemetry
       destinationNamespace: openshift-opentelemetry
       syncWave: "6"
@@ -168,7 +168,7 @@ connectivityLink:
       selfHeal: true
       skipDryRunOnMissingResource: true
     - id: connectivity-link-openshift-ai
-      enabled: true
+      enabled: false
       path: openshift-ai
       destinationNamespace: openshift-ai
       syncWave: "6"
@@ -176,7 +176,7 @@ connectivityLink:
       selfHeal: true
       skipDryRunOnMissingResource: true
     - id: connectivity-link-devspaces
-      enabled: true
+      enabled: false
       path: devspaces
       destinationNamespace: devspaces
       syncWave: "7"
@@ -184,7 +184,7 @@ connectivityLink:
       selfHeal: true
       skipDryRunOnMissingResource: true
     - id: llm-serving
-      enabled: true
+      enabled: false
       path: llm-serving
       destinationNamespace: openshift-ai-models
       syncWave: "7"
@@ -192,7 +192,7 @@ connectivityLink:
       selfHeal: true
       skipDryRunOnMissingResource: true
     - id: connectivity-link-neuralbank-stack
-      enabled: true
+      enabled: false  # Demo app — enable when needed for testing
       path: neuralbank-stack
       destinationNamespace: neuralbank-stack
       syncWave: "5"
@@ -200,7 +200,7 @@ connectivityLink:
       selfHeal: true
       skipDryRunOnMissingResource: true
     - id: ols
-      enabled: true
+      enabled: false
       path: openshift-lightspeed
       destinationNamespace: openshift-lightspeed
       syncWave: "8"
@@ -208,7 +208,7 @@ connectivityLink:
       selfHeal: true
       skipDryRunOnMissingResource: true
     - id: mcp-gateway
-      enabled: true
+      enabled: false
       path: mcp-gateway
       destinationNamespace: mcp-system
       syncWave: "9"
@@ -216,7 +216,7 @@ connectivityLink:
       selfHeal: true
       skipDryRunOnMissingResource: true
     - id: gitea
-      enabled: true
+      enabled: false
       path: gitea
       destinationNamespace: gitea
       syncWave: "3"
@@ -224,7 +224,7 @@ connectivityLink:
       selfHeal: true
       skipDryRunOnMissingResource: false
     - id: connectivity-link-applicationsets
-      enabled: true
+      enabled: false
       path: applicationsets
       destinationNamespace: openshift-gitops
       syncWave: "4"
@@ -240,7 +240,7 @@ connectivityLink:
       selfHeal: true
       skipDryRunOnMissingResource: true
     - id: apishift-secrets
-      enabled: true
+      enabled: false
       path: apishift-secrets
       destinationNamespace: gateforge
       syncWave: "8"
@@ -248,7 +248,7 @@ connectivityLink:
       selfHeal: true
       skipDryRunOnMissingResource: true
     - id: connectivity-link-nfl-wallet
-      enabled: true
+      enabled: false  # Demo app — enable when needed for testing
       path: nfl-wallet
       destinationNamespace: nfl-wallet-prod
       syncWave: "7"
@@ -264,7 +264,7 @@ connectivityLink:
       selfHeal: true
       skipDryRunOnMissingResource: true
     - id: neuralbank-3scale
-      enabled: true
+      enabled: false  # Demo app — enable when needed for testing
       path: neuralbank-3scale
       destinationNamespace: neuralbank-3scale
       syncWave: "6"
@@ -272,7 +272,7 @@ connectivityLink:
       selfHeal: true
       skipDryRunOnMissingResource: true
     - id: nfl-wallet-3scale
-      enabled: true
+      enabled: false  # Demo app — enable when needed for testing
       path: nfl-wallet-3scale
       destinationNamespace: nfl-wallet-3scale
       syncWave: "7"
@@ -280,7 +280,7 @@ connectivityLink:
       selfHeal: true
       skipDryRunOnMissingResource: true
     - id: mock-apis-3scale
-      enabled: true
+      enabled: false  # Demo app — enable when needed for testing
       path: mock-apis-3scale
       destinationNamespace: mock-apis-3scale
       syncWave: "8"
@@ -289,7 +289,7 @@ connectivityLink:
       skipDryRunOnMissingResource: true
     # Sample Gateways/HTTPRoutes/APIProducts for Kuadrant Console demos (mock-apis backends)
     - id: kuadrant-console-demo
-      enabled: true
+      enabled: false  # Demo app — enable when needed for testing
       path: kuadrant-console-demo
       destinationNamespace: kuadrant-console-demo
       syncWave: "9"
@@ -297,16 +297,15 @@ connectivityLink:
       selfHeal: true
       skipDryRunOnMissingResource: true
     - id: microcks
-      enabled: true
+      enabled: false
       path: microcks
       destinationNamespace: microcks
       syncWave: "8"
       prune: true
       selfHeal: true
       skipDryRunOnMissingResource: true
-      # Depends on helmApps.microcks-operator (syncWave 7) CRDs + controller
     - id: enterprise-apis-3scale
-      enabled: true
+      enabled: false  # Demo app — enable when needed for testing
       path: enterprise-apis-3scale
       destinationNamespace: user1-neuralbank
       syncWave: "9"
@@ -314,7 +313,7 @@ connectivityLink:
       selfHeal: true
       skipDryRunOnMissingResource: true
     - id: apicast-scenarios
-      enabled: true
+      enabled: false  # Demo app — enable when needed for testing
       path: apicast-scenarios
       destinationNamespace: apicast-scenario-1
       syncWave: "9"
@@ -322,7 +321,7 @@ connectivityLink:
       selfHeal: true
       skipDryRunOnMissingResource: true
     - id: workshop-registration
-      enabled: true
+      enabled: false
       path: workshop-registration
       destinationNamespace: showroom
       syncWave: "10"
@@ -336,184 +335,59 @@ connectivityLink:
 # ============================================================
   helmApps:
     - id: gitea
-      enabled: true
+      enabled: false
       repoURL: "https://dl.gitea.com/charts/"
       chart: gitea
       targetRevision: "12.5.0"
       destinationNamespace: gitea
       syncWave: "3"
-      values:
-        global:
-          compatibility:
-            openshift:
-              adaptSecurityContext: force
-        gitea:
-          admin:
-            username: gitea_admin
-            password: openshift
-            email: admin@gitea.local
-        postgresql-ha:
-          enabled: false
-        postgresql:
-          enabled: true
-        redis-cluster:
-          enabled: false
-        redis:
-          enabled: true
-        persistence:
-          enabled: true
-          size: 10Gi
-        service:
-          http:
-            type: ClusterIP
-            port: 3000
     - id: openshift-mcp-server
-      enabled: true
-      autoSync: false
-      repoURL: "https://maximilianoPizarro.github.io/openshift-mcp-server"
+      enabled: false
+      repoURL: "https://everything-is-code.github.io/openshift-mcp-server"
       chart: openshift-mcp-server
       targetRevision: "0.1.0-alpha"
       destinationNamespace: openshift-lightspeed
       syncWave: "8"
-      values:
-        namespace: openshift-lightspeed
-        litellm:
-          model:
-            name: "{{ .Values.litemaas.model | default .Values.maas.model }}"
-            modelId: "{{ .Values.litemaas.model | default .Values.maas.model }}"
-            apiBase: "{{ .Values.litemaas.apiUrl | default .Values.maas.endpoint }}"
-            apiKey: "{{ .Values.litemaas.apiKey | default .Values.maas.apiKey }}"
-    # Quarkus Microcks Operator (Ansible OLM operator is broken on clusters with
-    # OpenShift Virtualization — python openshift client API discovery crash).
     - id: microcks-operator
-      enabled: true
+      enabled: false
       repoURL: "https://github.com/microcks/microcks-operator"
       path: deploy/helm/microcks-operator
       targetRevision: "0.0.10"
       destinationNamespace: microcks
       syncWave: "7"
-      values:
-        image:
-          repository: quay.io/microcks/microcks-operator
-          tag: "0.0.10"
-          pullPolicy: IfNotPresent
     - id: n8n
-      enabled: true
-      repoURL: "https://maximilianopizarro.github.io/n8n-helm-chart/"
+      enabled: false
+      repoURL: "https://everything-is-code.github.io/n8n-helm-chart/"
       chart: n8n
       targetRevision: "1.16.0"
       destinationNamespace: openshift-lightspeed
       syncWave: "8"
-      values:
-        mailpit:
-          enabled: true
-          route:
-            enabled: true
-    # Chart on main: helm/apishift. Images retagged to maximilianopizarro/gateforge-*
-    # (upstream CI publishes everythingascode/apishift-*; frontend there is private).
     - id: apishift
-      enabled: true
-      # Keep autoSync on so fresh clusters get GateForge without a manual Argo sync
-      # (previously false left field-content-helm-apishift Missing / empty gateforge).
-      autoSync: true
+      enabled: false
       repoURL: "https://github.com/Everything-is-Code/apishift"
       path: helm/apishift
       targetRevision: "main"
       destinationNamespace: gateforge
       syncWave: "9"
-      values:
-        clusterDomain: "{{ .Values.deployer.domain }}"
-        route:
-          enabled: true
-          host: "gateforge-gateforge.{{ .Values.deployer.domain }}"
-        backend:
-          image:
-            repository: quay.io/maximilianopizarro/gateforge-backend
-            tag: latest
-            pullPolicy: Always
-        frontend:
-          image:
-            repository: quay.io/maximilianopizarro/gateforge-frontend
-            tag: latest
-            pullPolicy: Always
-        ai:
-          enabled: true
-          endpoint: "{{ .Values.litemaas.apiUrl | default .Values.maas.endpoint }}"
-          model: "{{ .Values.litemaas.model | default .Values.maas.model }}"
-          apiKey: "{{ .Values.litemaas.apiKey | default .Values.maas.apiKey }}"
-          existingSecret: gateforge-ai-secret
-        threescale:
-          adminApi:
-            enabled: true
-            url: "https://3scale-admin.{{ .Values.deployer.domain }}"
-            accessToken: "placeholder-set-in-argocd"
-          crdDiscovery:
-            enabled: true
-            namespace: 3scale-system
-        connectivityLink:
-          targetNamespace: kuadrant-system
-          gatewayStrategy: shared
-          gatewayClassName: istio
-        postgresql:
-          enabled: true
-          username: gateforge
-          password: gateforge
-        datagrid:
-          enabled: true
-          image:
-            repository: quay.io/infinispan/server
-            tag: "15.0"
-          replicas: 1
-          credentials:
-            username: developer
-            password: changeme
-        developerHub:
-          enabled: true
-          url: "https://backstage-developer-hub-developer-hub.{{ .Values.deployer.domain }}"
-          scaffolderUrl: "https://backstage-developer-hub-developer-hub.{{ .Values.deployer.domain }}/api/scaffolder/v2/tasks"
-          scaffolderToken: "placeholder-set-in-argocd"
-          componentSuffix: "-product"
-    # Migration Toolkit RHCL — deploy from fork (latest); docs: Everything-is-Code/migration-toolkit-rhcl
     - id: migration-toolkit-rhcl
-      enabled: true
-      repoURL: "https://github.com/maximilianoPizarro/migration-toolkit-rhcl"
+      enabled: false
+      repoURL: "https://github.com/Everything-is-Code/migration-toolkit-rhcl"
       path: helm/migration-toolkit-rhcl
       targetRevision: "main"
       destinationNamespace: migration-toolkit
       syncWave: "9"
-      values:
-        route:
-          enabled: true
-          host: "migration-toolkit.{{ .Values.deployer.domain }}"
-          timeout: "5m"
-        backend:
-          image:
-            repository: quay.io/maximilianopizarro/migration-toolkit-rhcl-backend
-            tag: v0.1.0
-            pullPolicy: Always
-        frontend:
-          image:
-            repository: quay.io/maximilianopizarro/migration-toolkit-rhcl-frontend
-            tag: v0.1.0
-            pullPolicy: Always
-        postgresql:
-          enabled: true
     # Kuadrant / Connectivity Link OpenShift Console plugin
-    # Docs: https://maximilianopizarro.github.io/custom-rhcl-console/
-    # Namespace MUST be custom-rhcl-console (plugin hardcodes ConfigMap lookups there).
     - id: custom-rhcl-console
       enabled: true
-      repoURL: "https://github.com/maximilianoPizarro/custom-rhcl-console"
+      repoURL: "https://github.com/Everything-is-Code/custom-rhcl-console"
       path: helm/custom-rhcl-console
       targetRevision: "main"
       destinationNamespace: custom-rhcl-console
       syncWave: "10"
       values:
-        # Chart default is false; enable so the Namespace manifest exists before
-        # namespaced resources (Argo CreateNamespace alone raced ConsolePlugin sync).
         createNamespace: true
         image:
-          repository: quay.io/maximilianopizarro/custom-rhcl-console
+          repository: quay.io/everythingascode/custom-rhcl-console
           tag: v0.1.2
           pullPolicy: Always
         consolePlugin:
@@ -523,19 +397,13 @@ connectivityLink:
         config:
           create: true
           name: custom-rhcl-console-config
-          grafanaNamespace: openshift-cluster-observability-operator
-          grafanaRouteName: grafana-observability-route
-          tempoNamespace: openshift-tempo
-          tempoGatewayRouteName: tempo-connectivity-link-jaegerui
-          tempoStackName: connectivity-link
-          developerHubUrl: "https://backstage-developer-hub-developer-hub.{{ .Values.deployer.domain }}"
           costCurrency: USD
           costBudget: "500"
           costPricing: '{"free":{"tokens_per_1k":0,"calls_per_1k":0},"basic":{"tokens_per_1k":0.05,"calls_per_1k":0.02},"pro":{"tokens_per_1k":0.10,"calls_per_1k":0.05},"anonymous":{"tokens_per_1k":0,"calls_per_1k":0.01}}'
         dnsProber:
           enabled: true
           image:
-            repository: quay.io/maximilianopizarro/custom-rhcl-console
+            repository: quay.io/everythingascode/custom-rhcl-console
             tag: dns-prober-v0.1.2
             pullPolicy: Always
           route:
@@ -547,22 +415,19 @@ connectivityLink:
 # Consumers: OLS, Developer Hub Lightspeed, openshift-mcp-server, ApiShift
 # ============================================================
 litemaas:
-  enabled: true
-  # apiKey injected by RHDP / Argo valuesObject — never commit real keys
+  enabled: false
   apiKey: ""
-  apiUrl: "https://maas-rhdp.apps.maas.redhatworkshops.io/v1"
-  model: "qwen3-14b"
+  apiUrl: ""
+  model: ""
 
-# Legacy aliases — prefer litemaas.*; kept as fallbacks for older overlays
 maas:
   apiKey: ""
-  endpoint: "https://maas-rhdp.apps.maas.redhatworkshops.io/v1"
-  model: "qwen3-14b"
+  endpoint: ""
+  model: ""
 
-# Lightspeed OLS — derived from litemaas when present (see connectivity-link-applications.yaml)
 lightspeed:
   llmApiKey: ""
-  llmEndpoint: "https://maas-rhdp.apps.maas.redhatworkshops.io/v1"
+  llmEndpoint: ""
 
 # ============================================================
 # User Scaling — single parameter controls all user provisioning
@@ -570,7 +435,7 @@ lightspeed:
 # Recommended: 30 (small), 50 (medium), 100 (large), 200 (extra-large)
 # See README.md "Cluster Sizing" for node/resource recommendations
 # ============================================================
-userCount: 200
+userCount: 10
 
 # ============================================================
 # Workshop Registration Portal
@@ -602,7 +467,7 @@ components:
     namespace: showroom
     name: showroom
     content:
-      repoUrl: "https://github.com/maximilianoPizarro/from-3scale-to-connectivity-link.git"
+      repoUrl: "https://github.com/Everything-is-Code/from-3scale-to-connectivity-link.git"
       repoRef: "main"
       antoraPlaybook: "showroom/site.yml"
       image: "quay.io/rhpds/showroom-content:v1.3.1"

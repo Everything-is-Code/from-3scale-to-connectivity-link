@@ -10,7 +10,7 @@ global:
 
 backend:
   image:
-    repository: quay.io/maximilianopizarro/neuralbank-backend
+    repository: quay.io/everythingascode/neuralbank-backend
     tag: "latest"
     pullPolicy: Always
   service:
@@ -19,7 +19,7 @@ backend:
 
 frontend:
   image:
-    repository: quay.io/maximilianopizarro/neuralbank-front
+    repository: quay.io/everythingascode/neuralbank-front
     tag: "pkce"
     pullPolicy: Always
   service:

@@ -39,13 +39,13 @@ You do *not* install these operators during the lab — you explore and migrate 
 . Open the *Showroom* URL for your cluster (pattern: `https://showroom-showroom.{cluster_domain}`).
 . Use the *Terminal* tab for `oc` / `curl`, and open *Developer Hub* in a new browser tab if the embedded panel fails OIDC login.
 
-NOTE: The public https://maximilianopizarro.github.io/from-3scale-to-connectivity-link/[GitHub Pages] site is a *documentation preview*. Placeholders such as `apps.cluster.example.com` and `{cluster_domain}` are *not* live hosts. On a deployed showroom, those values are rewritten automatically to your cluster domain.
+NOTE: The public https://everything-is-code.github.io/from-3scale-to-connectivity-link/[GitHub Pages] site is a *documentation preview*. Placeholders such as `apps.cluster.example.com` and `{cluster_domain}` are *not* live hosts. On a deployed showroom, those values are rewritten automatically to your cluster domain.
 
 == Environment sizing
 
 Operators and instructors should size the OpenShift cluster *before* inviting users. Scaling is driven by a single Helm value: `userCount` in `examples/helm/values.yaml`.
 
-IMPORTANT: Workshop infrastructure is installed from the Helm *App-of-Apps* chart under https://github.com/maximilianoPizarro/from-3scale-to-connectivity-link/tree/main/examples/helm[`examples/helm/`]. That chart renders Argo CD `Application` resources for operators, demo apps, showroom, and migration UIs. The child chart `components/applicationsets` (enabled as `connectivity-link-applicationsets` in `values.yaml`) deploys the Argo CD *ApplicationSet* that discovers user Git repos in Gitea and keeps per-user Applications in sync — it is part of the same install path, not a separate manual step.
+IMPORTANT: Workshop infrastructure is installed from the Helm *App-of-Apps* chart under https://github.com/Everything-is-Code/from-3scale-to-connectivity-link/tree/main/examples/helm[`examples/helm/`]. That chart renders Argo CD `Application` resources for operators, demo apps, showroom, and migration UIs. The child chart `components/applicationsets` (enabled as `connectivity-link-applicationsets` in `values.yaml`) deploys the Argo CD *ApplicationSet* that discovers user Git repos in Gitea and keeps per-user Applications in sync — it is part of the same install path, not a separate manual step.
 
 === Quickstart cluster profiles
 
@@ -112,7 +112,7 @@ Steady-state memory already consumed by platform stacks (independent of `userCou
 |===
 
 For RHDP KubeVirt quota details and per-user DevSpaces footprints, see the repository README section *Cluster Sizing*:
-https://github.com/maximilianoPizarro/from-3scale-to-connectivity-link#cluster-sizing
+https://github.com/Everything-is-Code/from-3scale-to-connectivity-link#cluster-sizing
 
 == Next
 

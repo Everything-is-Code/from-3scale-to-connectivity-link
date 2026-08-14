@@ -44,8 +44,8 @@ Plataforma financiera de demostración pre-desplegada en el clúster OpenShift. 
 
 | Componente | Imagen | Puerto |
 |------------|--------|--------|
-| **neuralbank-backend** | `quay.io/maximilianopizarro/neuralbank-backend:latest` | 8080 |
-| **neuralbank-frontend** | `quay.io/maximilianopizarro/neuralbank-front:pkce` | 8080 |
+| **neuralbank-backend** | `quay.io/everythingascode/neuralbank-backend:latest` | 8080 |
+| **neuralbank-frontend** | `quay.io/everythingascode/neuralbank-front:pkce` | 8080 |
 | **neuralbank-db** | `registry.redhat.io/rhel9/postgresql-15:latest` | 5432 |
 
 ## Namespace

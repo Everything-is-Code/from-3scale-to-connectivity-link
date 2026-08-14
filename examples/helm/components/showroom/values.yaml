@@ -6,7 +6,7 @@ showroom:
 
   # Lab guide Git repository
   content:
-    repoUrl: "https://github.com/maximilianoPizarro/from-3scale-to-connectivity-link.git"
+    repoUrl: "https://github.com/Everything-is-Code/from-3scale-to-connectivity-link.git"
     repoRef: "main"
     antoraPlaybook: "showroom/site.yml"
     image: "quay.io/rhpds/showroom-content:v1.3.1"

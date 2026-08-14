@@ -66,7 +66,7 @@ This repository provisions a complete migration workshop environment on OpenShif
 | **LiteMaaS** | LLM proxy for model access |
 | **APIShift** | Migration GUI with the same core path as Migration Toolkit, plus **AI model assist** and Developer Hub registration (`helmApps.apishift`). Chart: [Everything-is-Code/apishift](https://github.com/Everything-is-Code/apishift) |
 | **Migration Toolkit RHCL** | Guided Mushino GUI for 3scale → Connectivity Link (`helmApps.migration-toolkit-rhcl`). Docs: [Everything-is-Code/migration-toolkit-rhcl](https://github.com/Everything-is-Code/migration-toolkit-rhcl) |
-| **Kuadrant Console** | OpenShift Console plugin for Connectivity Link (`helmApps.custom-rhcl-console`). Docs: [custom-rhcl-console](https://maximilianopizarro.github.io/custom-rhcl-console/) |
+| **Kuadrant Console** | OpenShift Console plugin for Connectivity Link (`helmApps.custom-rhcl-console`). Docs: [custom-rhcl-console](https://everything-is-code.github.io/custom-rhcl-console/) |
 
 ### Migration strategies deep dive
 
@@ -85,7 +85,7 @@ OpenShift Console **dynamic plugin** (display name: *Connectivity Link*) that op
 | **Traffic & cost** | Overview metrics via Thanos/Prometheus; deep links into Grafana RHCL dashboards |
 | **Traces** | Tempo deep links when a `TempoStack` / Tempo monolith is present |
 | **Namespace** | Must be `custom-rhcl-console` (plugin ConfigMap lookups are hardcoded) |
-| **Image** | `quay.io/maximilianopizarro/custom-rhcl-console:v0.1.2` |
+| **Image** | `quay.io/everythingascode/custom-rhcl-console:v0.1.2` |
 
 Helm entry: `connectivityLink.helmApps` → `id: custom-rhcl-console` in [`examples/helm/values.yaml`](examples/helm/values.yaml). Demo APIs + gateway live in `kuadrant-console-demo`.
 
@@ -97,7 +97,7 @@ Quarkus backend + PatternFly frontend that walks operators through connecting to
 |------|-------|
 | **Route** | `https://migration-toolkit.<cluster-domain>` |
 | **Namespace** | `migration-toolkit` |
-| **Images** | `quay.io/maximilianopizarro/migration-toolkit-rhcl-{backend,frontend}:v0.1.0` |
+| **Images** | `quay.io/everythingascode/migration-toolkit-rhcl-{backend,frontend}:v0.1.0` |
 | **Defaults** | `THREESCALE_DEFAULT_URL` / `THREESCALE_DEFAULT_TOKEN` (via Helm `backend.threescale.*`) pre-fill the Connection form (`GET /api/defaults`) |
 | **Storage** | In-cluster PostgreSQL |
 | **Docs** | [Everything-is-Code/migration-toolkit-rhcl](https://github.com/Everything-is-Code/migration-toolkit-rhcl) |
@@ -113,7 +113,7 @@ Same migration capabilities as Migration Toolkit RHCL (discover 3scale → gener
 | **3scale** | `threescale.adminApi.url` + `accessToken` (set in ArgoCD `valuesObject`, not committed) |
 | **Developer Hub** | `developerHub.scaffolderToken` = RHDH `BACKEND_SECRET` |
 | **AI assist** | LiteMaaS / MaaS endpoint + model from `litemaas.*` (differentiation vs Migration Toolkit) |
-| **Images** | `quay.io/maximilianopizarro/gateforge-{backend,frontend}:latest` |
+| **Images** | `quay.io/everythingascode/gateforge-{backend,frontend}:latest` |
 
 > **Tip:** After a fresh deploy, verify APIShift can register catalog entities. A `401` on `confirm-registration` usually means `scaffolderToken` is still the placeholder — patch the ArgoCD Application `field-content-helm-apishift` with the real `secrets-rhdh` / `BACKEND_SECRET` value.
 
@@ -478,7 +478,7 @@ Connectivity Link runs on **Istio Gateway API**. When browser clients (Swagger U
 
 ```bash
 # Clone this template
-git clone https://github.com/maximilianoPizarro/from-3scale-to-connectivity-link.git my-content
+git clone https://github.com/Everything-is-Code/from-3scale-to-connectivity-link.git my-content
 cd my-content
 
 # Choose an example and start customizing
@@ -503,7 +503,7 @@ Two admin users with full Platform Engineer permissions in Developer Hub:
 
 | Username | Auth Method | Roles | Notes |
 |----------|-------------|-------|-------|
-| `maximilianopizarro` | Keycloak SSO (email) | platformengineer, api-admin, api-owner | Primary admin |
+| `everythingascode` | Keycloak SSO (email) | platformengineer, api-admin, api-owner | Primary admin |
 | `platformadmin` | Keycloak username/password | platformengineer, api-admin, api-owner | Must be created in Keycloak manually |
 
 **Creating `platformadmin` in Keycloak:**
@@ -760,7 +760,7 @@ For a fresh installation, run these prompts in sequence to validate the full sta
 
 ## Documentation
 
-- [Workshop (GitHub Pages)](https://maximilianopizarro.github.io/from-3scale-to-connectivity-link/) - Full workshop guide (Antora showroom)
+- [Workshop (GitHub Pages)](https://everything-is-code.github.io/from-3scale-to-connectivity-link/) - Full workshop guide (Antora showroom)
 - Showroom modules: [11 Kuadrant Console](showroom/content/modules/ROOT/pages/11-kuadrant-console.adoc) · [12 Migration Toolkit](showroom/content/modules/ROOT/pages/12-migration-toolkit.adoc) · [13 APIShift](showroom/content/modules/ROOT/pages/13-apishift-gateforge.adoc)
 - [Architecture diagrams](docs/images/) - Cluster topology, migration flow, console architecture, Service Mesh EnvoyFilter
 - [`scripts/get-credentials.sh`](scripts/get-credentials.sh) - Print URLs and admin credentials for non-OAuth consoles
@@ -768,7 +768,7 @@ For a fresh installation, run these prompts in sequence to validate the full sta
 - [examples/helm/README.md](examples/helm/README.md) - Helm deployment guide
 - [examples/ansible/README.md](examples/ansible/README.md) - Ansible deployment guide
 - [docs/ansible-developer-guide.md](docs/ansible-developer-guide.md) - In-depth Ansible patterns
-- [Kuadrant Console plugin docs](https://maximilianopizarro.github.io/custom-rhcl-console/)
+- [Kuadrant Console plugin docs](https://everything-is-code.github.io/custom-rhcl-console/)
 - [Red Hat 3scale Documentation](https://docs.redhat.com/en/documentation/red_hat_3scale_api_management/) - Official 3scale docs
 - [Red Hat Connectivity Link Documentation](https://docs.redhat.com/en/documentation/red_hat_connectivity_link/) - Official Connectivity Link docs
 

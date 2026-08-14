@@ -1,6 +1,6 @@
 clusterDomain: "apps.cluster.example.com"
 
-mockImage: quay.io/maximilianopizarro/neuralbank-backend:latest
+mockImage: quay.io/everythingascode/neuralbank-backend:latest
 
 apis:
   - name: payment-gateway

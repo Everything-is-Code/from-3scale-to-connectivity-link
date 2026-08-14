@@ -1,13 +1,13 @@
 site:
   title: "From 3scale to Connectivity Link"
-  url: https://maximilianopizarro.github.io/from-3scale-to-connectivity-link
+  url: https://everything-is-code.github.io/from-3scale-to-connectivity-link
   start_page: modules::index.adoc
 content:
   sources:
     # RHDP showroom runs Antora inside `/showroom/repo`; local paths like `url: .` or `url: ..`
     # break the init container (not a git root / escapes the clone). Remote URL matches HEAD after push.
     # Local previews without pushing: run Antora from repo root with inline playbook override or push to a branch.
-    - url: https://github.com/maximilianoPizarro/from-3scale-to-connectivity-link.git
+    - url: https://github.com/Everything-is-Code/from-3scale-to-connectivity-link.git
       branches: HEAD
       start_path: showroom/content
 ui:

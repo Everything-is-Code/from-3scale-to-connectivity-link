@@ -1,8 +1,8 @@
 apiVersion: v2
 appVersion: 1.0.0
 description: Financial Risk Evaluation AI Application Demo
-home: https://maximilianopizarro.gitlab.io/neuralbank-stack/
-icon: https://maximilianopizarro.gitlab.io/neuralbank-stack/neuralbank.svg
+home: https://everything-is-code.gitlab.io/neuralbank-stack/
+icon: https://everything-is-code.gitlab.io/neuralbank-stack/neuralbank.svg
 keywords:
 - neuralbank
 - banking
@@ -15,6 +15,6 @@ maintainers:
   name: Maximiliano Pizarro
 name: neuralbank-stack
 sources:
-- https://gitlab.com/maximilianoPizarro/neuralbank-stack
+- https://gitlab.com/Everything-is-Code/neuralbank-stack
 type: application
 version: 0.1.0

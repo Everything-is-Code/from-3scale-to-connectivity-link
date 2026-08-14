@@ -10,9 +10,9 @@ Noriaki Mushino’s [migration-toolkit-rhcl](https://github.com/nmushino/migrati
 
 ## Goals
 
-1. Wire the existing Helm chart at [maximilianoPizarro/migration-toolkit-rhcl](https://github.com/maximilianoPizarro/migration-toolkit-rhcl) (`helm/migration-toolkit-rhcl`) into App of Apps via `connectivityLink.helmApps`.
+1. Wire the existing Helm chart at [Everything-is-Code/migration-toolkit-rhcl](https://github.com/Everything-is-Code/migration-toolkit-rhcl) (`helm/migration-toolkit-rhcl`) into App of Apps via `connectivityLink.helmApps`.
 2. Keep it **`enabled: false`** so workshop installs are unchanged until explicitly flipped.
-3. No bash / S2I in this repo — images from Quay (`quay.io/maximilianopizarro/migration-toolkit-rhcl-{backend,frontend}:v0.1.0`).
+3. No bash / S2I in this repo — images from Quay (`quay.io/everythingascode/migration-toolkit-rhcl-{backend,frontend}:v0.1.0`).
 4. Document how to enable and how to retarget `repoURL` to `nmushino/migration-toolkit-rhcl` after upstream merge.
 
 ## Non-goals
@@ -27,7 +27,7 @@ Noriaki Mushino’s [migration-toolkit-rhcl](https://github.com/nmushino/migrati
 | Decision | Choice |
 |----------|--------|
 | Integration | **helmApps** (same pattern as ApiShift / GateForge) |
-| Chart source | Git path on `maximilianoPizarro/migration-toolkit-rhcl` → later `nmushino/...` |
+| Chart source | Git path on `Everything-is-Code/migration-toolkit-rhcl` → later `nmushino/...` |
 | Default | `enabled: false` |
 | Namespace | `migration-toolkit` |
 | Route host | `migration-toolkit.{{ deployer.domain }}` |
@@ -39,7 +39,7 @@ Noriaki Mushino’s [migration-toolkit-rhcl](https://github.com/nmushino/migrati
 ```text
 field-content (Helm parent)
   └─ Application field-content-helm-migration-toolkit-rhcl   [ONLY if enabled: true]
-        source: github.com/maximilianoPizarro/migration-toolkit-rhcl
+        source: github.com/Everything-is-Code/migration-toolkit-rhcl
                 path: helm/migration-toolkit-rhcl
         destination: migration-toolkit
         → Deployment backend + frontend + PostgreSQL + Route + RBAC
@@ -52,7 +52,7 @@ connectivityLink:
   helmApps:
     - id: migration-toolkit-rhcl
       enabled: false
-      repoURL: "https://github.com/maximilianoPizarro/migration-toolkit-rhcl"
+      repoURL: "https://github.com/Everything-is-Code/migration-toolkit-rhcl"
       path: helm/migration-toolkit-rhcl
       targetRevision: "main"
       destinationNamespace: migration-toolkit
@@ -63,12 +63,12 @@ connectivityLink:
           host: "migration-toolkit.{{ .Values.deployer.domain }}"
         backend:
           image:
-            repository: quay.io/maximilianopizarro/migration-toolkit-rhcl-backend
+            repository: quay.io/everythingascode/migration-toolkit-rhcl-backend
             tag: v0.1.0
             pullPolicy: Always
         frontend:
           image:
-            repository: quay.io/maximilianopizarro/migration-toolkit-rhcl-frontend
+            repository: quay.io/everythingascode/migration-toolkit-rhcl-frontend
             tag: v0.1.0
             pullPolicy: Always
         postgresql:

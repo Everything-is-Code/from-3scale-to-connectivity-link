@@ -13,7 +13,7 @@ Migrate API management from *Red Hat 3scale API Management* to *Red Hat Connecti
 
 The workshop ships *four complementary approaches*. Explore pre-deployed 3scale and Connectivity Link apps side by side, then pick the path that fits your team.
 
-NOTE: URLs that contain `\{cluster_domain}` or `apps.cluster.example.com` are *placeholders*. On a *deployed showroom* they are replaced automatically with your cluster ingress domain. On https://maximilianopizarro.github.io/from-3scale-to-connectivity-link/[GitHub Pages] they remain examples and will not resolve — use this site as documentation preview only.
+NOTE: URLs that contain `\{cluster_domain}` or `apps.cluster.example.com` are *placeholders*. On a *deployed showroom* they are replaced automatically with your cluster ingress domain. On https://everything-is-code.github.io/from-3scale-to-connectivity-link/[GitHub Pages] they remain examples and will not resolve — use this site as documentation preview only.
 
 IMPORTANT: Workshop usernames and passwords are *ephemeral lab credentials*. They exist only for this disposable environment. Do not reuse the same password patterns or share production secrets in training materials.
 

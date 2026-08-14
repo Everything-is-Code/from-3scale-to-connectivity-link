@@ -34,7 +34,7 @@ examples/helm/
     ├── connectivity-link-neuralbank-stack/
     └── …                              # see values.yaml → connectivityLink.apps
 ```
-Connectivity-link manifests are **vendored** from [connectivity-link](https://gitlab.com/maximilianoPizarro/connectivity-link): plain YAML directories were rendered with `kubectl kustomize` into `templates/all.yaml` where applicable; the `operators` and `neuralbank-stack` upstream Helm charts were copied as subcharts.
+Connectivity-link manifests are **vendored** from [connectivity-link](https://gitlab.com/Everything-is-Code/connectivity-link): plain YAML directories were rendered with `kubectl kustomize` into `templates/all.yaml` where applicable; the `operators` and `neuralbank-stack` upstream Helm charts were copied as subcharts.
 
 ## Configuration
 
@@ -48,11 +48,11 @@ Connectivity-link manifests are **vendored** from [connectivity-link](https://gi
 | `maas.*` / `lightspeed.*` | Legacy fallbacks if `litemaas.*` is empty |
 | `components.showroom` | Showroom content repo, nookbag, terminal (default: from-3scale-to-connectivity-link) |
 
-**ApiShift:** Deployed as a Git-sourced Helm app (`connectivityLink.helmApps` with `path: helm/apishift`) from [Everything-is-Code/apishift](https://github.com/Everything-is-Code/apishift) `@main`, namespace `gateforge`, images `quay.io/maximilianopizarro/gateforge-{frontend,backend}:latest` (retagged from upstream builds; upstream Quay org uses `everythingascode/apishift-*`). Route host kept as `gateforge-gateforge.<domain>`. AI secret: `gateforge-ai-secret` via `ai.existingSecret` (`components/apishift-secrets` from `litemaas.apiKey`).
+**ApiShift:** Deployed as a Git-sourced Helm app (`connectivityLink.helmApps` with `path: helm/apishift`) from [Everything-is-Code/apishift](https://github.com/Everything-is-Code/apishift) `@main`, namespace `gateforge`, images `quay.io/everythingascode/gateforge-{frontend,backend}:latest` (retagged from upstream builds; upstream Quay org uses `everythingascode/apishift-*`). Route host kept as `gateforge-gateforge.<domain>`. AI secret: `gateforge-ai-secret` via `ai.existingSecret` (`components/apishift-secrets` from `litemaas.apiKey`).
 
-**Migration Toolkit RHCL:** Git-sourced Helm app (`connectivityLink.helmApps` id `migration-toolkit-rhcl`, enabled) from [maximilianoPizarro/migration-toolkit-rhcl](https://github.com/maximilianoPizarro/migration-toolkit-rhcl) path `helm/migration-toolkit-rhcl` (fork with latest chart/images). Docs: [Everything-is-Code/migration-toolkit-rhcl](https://github.com/Everything-is-Code/migration-toolkit-rhcl). Namespace `migration-toolkit`, route `migration-toolkit.<domain>`, images `quay.io/maximilianopizarro/migration-toolkit-rhcl-{backend,frontend}:v0.1.0`. ConsoleLink: **Migration Toolkit RHCL** (ApplicationMenu → API Management).
+**Migration Toolkit RHCL:** Git-sourced Helm app (`connectivityLink.helmApps` id `migration-toolkit-rhcl`, enabled) from [Everything-is-Code/migration-toolkit-rhcl](https://github.com/Everything-is-Code/migration-toolkit-rhcl) path `helm/migration-toolkit-rhcl` (fork with latest chart/images). Docs: [Everything-is-Code/migration-toolkit-rhcl](https://github.com/Everything-is-Code/migration-toolkit-rhcl). Namespace `migration-toolkit`, route `migration-toolkit.<domain>`, images `quay.io/everythingascode/migration-toolkit-rhcl-{backend,frontend}:v0.1.0`. ConsoleLink: **Migration Toolkit RHCL** (ApplicationMenu → API Management).
 
-**Kuadrant Console (custom-rhcl-console):** Git-sourced Helm app (`connectivityLink.helmApps` id `custom-rhcl-console`) from [maximilianoPizarro/custom-rhcl-console](https://github.com/maximilianoPizarro/custom-rhcl-console) path `helm/custom-rhcl-console` — docs [GitHub Pages](https://maximilianopizarro.github.io/custom-rhcl-console/). Namespace **must** be `custom-rhcl-console`. Registers OpenShift `ConsolePlugin` (sidebar) + optional dns-prober; not a standalone ApplicationMenu link.
+**Kuadrant Console (custom-rhcl-console):** Git-sourced Helm app (`connectivityLink.helmApps` id `custom-rhcl-console`) from [Everything-is-Code/custom-rhcl-console](https://github.com/Everything-is-Code/custom-rhcl-console) path `helm/custom-rhcl-console` — docs [GitHub Pages](https://everything-is-code.github.io/custom-rhcl-console/). Namespace **must** be `custom-rhcl-console`. Registers OpenShift `ConsolePlugin` (sidebar) + optional dns-prober; not a standalone ApplicationMenu link.
 
 **Note:** LiteMaaS-related YAML in `connectivity-link-litemaas` still contains cluster-specific URLs from the upstream snapshot. For a new cluster, adjust `cluster-config` / domain handling in that chart or maintain a fork.
 

@@ -30,4 +30,4 @@ Changed from separate deployment types (helm/ansible/kustomize) to **hybrid mode
 - Variable recursion fix: Use underscore-prefixed internal variables
 
 ---
-*Repository: https://github.com/maximilianoPizarro/from-3scale-to-connectivity-link*
+*Repository: https://github.com/Everything-is-Code/from-3scale-to-connectivity-link*

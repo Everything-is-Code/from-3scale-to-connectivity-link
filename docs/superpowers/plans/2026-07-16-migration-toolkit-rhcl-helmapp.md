@@ -4,7 +4,8 @@
 
 **Goal:** Add an optional, disabled-by-default Argo CD `helmApps` entry for Mushino’s migration toolkit chart.
 
-**Architecture:** Reuse existing `connectivityLink.helmApps` renderer; point at Git-sourced chart `helm/migration-toolkit-rhcl` on maximilianoPizarro’s fork; pin Quay images `v0.1.0`.
+**Architecture:** Reuse existing `connectivityLink.helmApps` renderer; point at Git-sourced chart `helm/migration-toolkit-rhcl` on Everything-is-Code’s fork; pin Quay images `v0.1.0`.
+
 
 **Tech Stack:** Helm parent chart (`examples/helm`), OpenShift GitOps / Argo CD Application CR.
 

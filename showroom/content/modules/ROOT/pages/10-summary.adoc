@@ -172,7 +172,7 @@ WARNING: Do not delete the source namespace until you have fully validated the C
 
 The source code, Helm charts, Software Templates, and this workshop documentation are available at:
 
-https://github.com/maximilianoPizarro/from-3scale-to-connectivity-link
+https://github.com/Everything-is-Code/from-3scale-to-connectivity-link
 
 == Need help?
 
@@ -180,4 +180,4 @@ See xref:14-troubleshooting.adoc[14. Troubleshooting] for common OIDC iframe, Ar
 
 == Thank you
 
-This workshop was created by https://maximilianopizarro.github.io/[Maximiliano Pizarro] and is powered by https://kuadrant.io/[Kuadrant] and https://developers.redhat.com/rhdh[Red Hat Developer Hub].
+This workshop was created by https://everything-is-code.github.io/[Everything-is-Code] and is powered by https://kuadrant.io/[Kuadrant] and https://developers.redhat.com/rhdh[Red Hat Developer Hub].

@@ -12,7 +12,7 @@ spec:
   text: Workshop Registration
   applicationMenu:
     section: Workshop Tools
-    imageURL: https://raw.githubusercontent.com/maximilianoPizarro/from-3scale-to-connectivity-link/main/docs/assets/images/kuadrant-logo.svg
+    imageURL: https://raw.githubusercontent.com/Everything-is-Code/from-3scale-to-connectivity-link/main/docs/assets/images/kuadrant-logo.svg
 ---
 apiVersion: console.openshift.io/v1
 kind: ConsoleLink
@@ -152,4 +152,4 @@ spec:
   text: Migration Toolkit RHCL
   applicationMenu:
     section: API Management
-    imageURL: https://raw.githubusercontent.com/maximilianoPizarro/from-3scale-to-connectivity-link/main/docs/assets/images/kuadrant-logo.svg
+    imageURL: https://raw.githubusercontent.com/Everything-is-Code/from-3scale-to-connectivity-link/main/docs/assets/images/kuadrant-logo.svg

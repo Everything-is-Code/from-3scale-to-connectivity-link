@@ -13,11 +13,11 @@ metadata:
 spec:
   keepAPIOnDelete: false
   artifacts:
-    - url: https://raw.githubusercontent.com/maximilianoPizarro/from-3scale-to-connectivity-link/{{ $revision }}/examples/helm/components/enterprise-apis-3scale/openapi/account-mgmt.json
+    - url: https://raw.githubusercontent.com/Everything-is-Code/from-3scale-to-connectivity-link/{{ $revision }}/examples/helm/components/enterprise-apis-3scale/openapi/account-mgmt.json
       mainArtifact: true
-    - url: https://raw.githubusercontent.com/maximilianoPizarro/from-3scale-to-connectivity-link/{{ $revision }}/examples/helm/components/enterprise-apis-3scale/openapi/wire-transfer.json
+    - url: https://raw.githubusercontent.com/Everything-is-Code/from-3scale-to-connectivity-link/{{ $revision }}/examples/helm/components/enterprise-apis-3scale/openapi/wire-transfer.json
       mainArtifact: true
-    - url: https://raw.githubusercontent.com/maximilianoPizarro/from-3scale-to-connectivity-link/{{ $revision }}/examples/helm/components/enterprise-apis-3scale/openapi/card-issuing.json
+    - url: https://raw.githubusercontent.com/Everything-is-Code/from-3scale-to-connectivity-link/{{ $revision }}/examples/helm/components/enterprise-apis-3scale/openapi/card-issuing.json
       mainArtifact: true
-    - url: https://raw.githubusercontent.com/maximilianoPizarro/from-3scale-to-connectivity-link/{{ $revision }}/examples/helm/components/enterprise-apis-3scale/openapi/kyc-verification.json
+    - url: https://raw.githubusercontent.com/Everything-is-Code/from-3scale-to-connectivity-link/{{ $revision }}/examples/helm/components/enterprise-apis-3scale/openapi/kyc-verification.json
       mainArtifact: true
